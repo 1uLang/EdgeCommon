@@ -51,6 +51,12 @@ service ServerService {
 	// 审核服务的域名设置
 	rpc updateServerNamesAuditing (UpdateServerNamesAuditingRequest) returns (RPCSuccess);
 
+	// 修改服务的DNS相关设置
+	rpc updateServerDNS(UpdateServerDNSRequest) returns (RPCSuccess);
+
+	// 重新生成CNAME
+	rpc regenerateServerCNAME(RegenerateServerCNAMERequest) returns (RPCSuccess);
+
 	// 计算匹配的服务数量
 	rpc countAllEnabledServersMatch (CountAllEnabledServersMatchRequest) returns (RPCCountResponse);
 
@@ -116,6 +122,21 @@ service ServerService {
 
 	// 查找最近访问的服务
 	rpc findLatestServers (FindLatestServersRequest) returns (FindLatestServersResponse);
+
+	// 查找某个服务附近的服务
+	rpc findNearbyServers(FindNearbyServersRequest) returns (FindNearbyServersResponse);
+
+	// 清除缓存
+	rpc purgeServerCache(PurgeServerCacheRequest) returns (PurgeServerCacheResponse);
+
+	// 查找流量限制
+	rpc findEnabledServerTrafficLimit(FindEnabledServerTrafficLimitRequest) returns (FindEnabledServerTrafficLimitResponse);
+
+	// 设置流量限制
+	rpc updateServerTrafficLimit(UpdateServerTrafficLimitRequest) returns (RPCSuccess);
+
+	// 修改服务套餐
+	rpc updateServerUserPlan(UpdateServerUserPlanRequest) returns (RPCSuccess);
 }
 
 // 创建服务
@@ -137,6 +158,7 @@ message CreateServerRequest {
 	int64 webId = 15;
 	bytes reverseProxyJSON = 16;
 	repeated int64 serverGroupIds = 17;
+	int64 userPlanId = 18;
 
 	int64 nodeClusterId = 30;
 	bytes includeNodesJSON = 31;
@@ -199,6 +221,7 @@ message UpdateServerWebRequest {
 	int64 webId = 2;
 }
 
+// 修改服务的反向代理设置
 message UpdateServerReverseProxyRequest {
 	int64 serverId = 1;
 	bytes reverseProxyJSON = 2;
@@ -226,6 +249,17 @@ message UpdateServerNamesRequest {
 message UpdateServerNamesAuditingRequest {
 	int64 serverId = 1;
 	ServerNameAuditingResult auditingResult = 2;
+}
+
+// 修改服务的DNS相关设置
+message UpdateServerDNSRequest {
+	int64 serverId = 1;
+	bool supportCNAME = 2;
+}
+
+// 重新生成CNAME
+message RegenerateServerCNAMERequest {
+	int64 serverId = 1;
 }
 
 // 计算服务数量
@@ -361,6 +395,7 @@ message FindEnabledServerDNSRequest {
 message FindEnabledServerDNSResponse {
 	string dnsName = 1;
 	DNSDomain domain = 2;
+	bool supportCNAME = 3;
 }
 
 // 检查服务是否属于某个用户
@@ -456,4 +491,52 @@ message FindLatestServersRequest {
 
 message FindLatestServersResponse {
 	repeated Server servers = 1;
+}
+
+// 查找某个服务附近的服务
+message FindNearbyServersRequest {
+	int64 serverId = 1;
+}
+
+message FindNearbyServersResponse {
+	string scope = 1; // 范围 cluster|group
+	repeated GroupInfo groups = 2;
+
+	message GroupInfo {
+		string name = 1;
+		repeated Server servers = 2;
+	}
+}
+
+// 清除缓存
+message PurgeServerCacheRequest {
+	repeated string domains = 1;
+	repeated string keys = 2;
+	repeated string prefixes = 3;
+}
+
+message PurgeServerCacheResponse {
+	bool isOk = 1;
+	string message = 2;
+}
+
+// 查找流量限制
+message FindEnabledServerTrafficLimitRequest {
+	int64 serverId = 1;
+}
+
+message FindEnabledServerTrafficLimitResponse {
+	bytes trafficLimitJSON = 1;
+}
+
+// 设置流量限制
+message UpdateServerTrafficLimitRequest {
+	int64 serverId = 1;
+	bytes trafficLimitJSON = 2;
+}
+
+// 修改服务套餐
+message UpdateServerUserPlanRequest {
+	int64 serverId = 1;
+	int64 userPlanId = 2;
 }

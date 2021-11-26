@@ -10,6 +10,7 @@ const (
 	IPAddressThresholdItemNodeAvgRequests      IPAddressThresholdItem = "nodeAvgRequests"      // 个
 	IPAddressThresholdItemNodeAvgTrafficOut    IPAddressThresholdItem = "nodeAvgTrafficOut"    // 节点下行流量 M
 	IPAddressThresholdItemNodeAvgTrafficIn     IPAddressThresholdItem = "nodeAvgTrafficIn"     // 节点上行流量 M
+	IPAddressThresholdItemNodeHealthCheck      IPAddressThresholdItem = "nodeHealthCheck"      // 节点健康检查结果
 	IPAddressThresholdItemGroupAvgRequests     IPAddressThresholdItem = "groupAvgRequests"     // 个
 	IPAddressThresholdItemGroupAvgTrafficIn    IPAddressThresholdItem = "groupAvgTrafficIn"    // 分组上行流量 M
 	IPAddressThresholdItemGroupAvgTrafficOut   IPAddressThresholdItem = "groupAvgTrafficOut"   // 分组下行流量 M
@@ -39,6 +40,12 @@ func FindAllIPAddressThresholdItems() []maps.Map {
 			"code":        IPAddressThresholdItemNodeAvgTrafficIn,
 			"description": "当前节点在单位时间内接收的上行流量。",
 			"unit":        "M",
+		},
+		{
+			"name":        "节点健康检查结果",
+			"code":        IPAddressThresholdItemNodeHealthCheck,
+			"description": "当前节点健康检查结果。",
+			"unit":        "",
 		},
 
 		{

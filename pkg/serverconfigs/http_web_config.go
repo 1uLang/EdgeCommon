@@ -10,8 +10,8 @@ type HTTPWebConfig struct {
 	IsOn               bool                                `yaml:"isOn" json:"isOn"`                             // 是否启用
 	Locations          []*HTTPLocationConfig               `yaml:"locations" json:"locations"`                   // 路径规则 TODO
 	LocationRefs       []*HTTPLocationRef                  `yaml:"locationRefs" json:"locationRefs"`             // 路径规则应用
-	GzipRef            *HTTPGzipRef                        `yaml:"gzipRef" json:"gzipRef"`                       // Gzip引用
-	Gzip               *HTTPGzipConfig                     `yaml:"gzip" json:"gzip"`                             // Gzip配置
+	Compression        *HTTPCompressionConfig              `yaml:"compression" json:"compression"`               // 压缩配置
+	WebP               *WebPImageConfig                    `yaml:"webp" json:"webp"`                             // WebP配置
 	Charset            *HTTPCharsetConfig                  `yaml:"charset" json:"charset"`                       // 字符编码
 	Shutdown           *HTTPShutdownConfig                 `yaml:"shutdown" json:"shutdown"`                     // 临时关闭配置
 	Pages              []*HTTPPageConfig                   `yaml:"pages" json:"pages"`                           // 特殊页面配置
@@ -40,6 +40,9 @@ type HTTPWebConfig struct {
 
 	HostRedirects []*HTTPHostRedirectConfig `yaml:"hostRedirects" json:"hostRedirects"` // 主机跳转
 	Auth          *HTTPAuthConfig           `yaml:"auth" json:"auth"`                   // 认证配置
+
+	RemoteAddr   *HTTPRemoteAddrConfig `yaml:"remoteAddr" json:"remoteAddr"`     // 客户端IP获取方式
+	MergeSlashes bool                  `yaml:"mergeSlashes" json:"mergeSlashes"` // 是否合并路径中的斜杠（/）
 }
 
 func (this *HTTPWebConfig) Init() error {
@@ -61,9 +64,9 @@ func (this *HTTPWebConfig) Init() error {
 		}
 	}
 
-	// gzip
-	if this.Gzip != nil {
-		err := this.Gzip.Init()
+	// compression
+	if this.Compression != nil {
+		err := this.Compression.Init()
 		if err != nil {
 			return err
 		}
@@ -228,6 +231,22 @@ func (this *HTTPWebConfig) Init() error {
 	// auth
 	if this.Auth != nil {
 		err := this.Auth.Init()
+		if err != nil {
+			return err
+		}
+	}
+
+	// webp
+	if this.WebP != nil {
+		err := this.WebP.Init()
+		if err != nil {
+			return err
+		}
+	}
+
+	// remoteAddr
+	if this.RemoteAddr != nil {
+		err := this.RemoteAddr.Init()
 		if err != nil {
 			return err
 		}

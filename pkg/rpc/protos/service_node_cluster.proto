@@ -145,8 +145,7 @@ message UpdateNodeClusterRequest {
 	string name = 2;
 	int64 nodeGrantId = 3;
 	string installDir = 4;
-	int64 httpCachePolicyId = 5;
-	int64 httpFirewallPolicyId = 6;
+	string timeZone = 5;
 }
 
 // 删除集群
@@ -247,6 +246,8 @@ message FindEnabledNodeClusterDNSResponse {
 	string defaultRoute = 6;
 	bool nodesAutoSync = 4;
 	bool serversAutoSync = 5;
+	repeated string cnameRecords = 7;
+	int32 ttl = 8;
 }
 
 // 计算使用某个DNS服务商的集群数量
@@ -285,6 +286,8 @@ message UpdateNodeClusterDNSRequest {
 	int64 dnsDomainId = 3;
 	bool nodesAutoSync = 4;
 	bool serversAutoSync = 5;
+	repeated string cnameRecords = 6;
+	int32 ttl = 7;
 }
 
 // 检查集群的DNS是否有变化
@@ -371,6 +374,7 @@ message FindNodeClusterSystemServiceResponse {
 // 获取集群中可以使用的端口
 message FindFreePortInNodeClusterRequest {
 	int64 nodeClusterId = 1;
+	string protocolFamily = 2;
 }
 
 message FindFreePortInNodeClusterResponse {
@@ -383,6 +387,7 @@ message CheckPortIsUsingInNodeClusterRequest {
 	int64 nodeClusterId = 2;
 	int64 excludeServerId = 3;
 	string excludeProtocol = 4;
+	string protocolFamily = 5;
 }
 
 message CheckPortIsUsingInNodeClusterResponse {

@@ -76,4 +76,19 @@ func TestMatchDomain(t *testing.T) {
 		ok := MatchDomains([]string{"~^\\d+.example.com$"}, "123.example.com")
 		a.IsTrue(ok)
 	}
+	{
+		ok := MatchDomains([]string{"*"}, "example.com")
+		a.IsTrue(ok)
+	}
+}
+
+func TestIsSpecialDomain(t *testing.T) {
+	var a = assert.NewAssertion(t)
+
+	a.IsTrue(IsFuzzyDomain(""))
+	a.IsTrue(IsFuzzyDomain(".hello.com"))
+	a.IsTrue(IsFuzzyDomain("*.hello.com"))
+	a.IsTrue(IsFuzzyDomain("hello.*.com"))
+	a.IsTrue(IsFuzzyDomain("~^hello\\.com"))
+	a.IsFalse(IsFuzzyDomain("hello.com"))
 }

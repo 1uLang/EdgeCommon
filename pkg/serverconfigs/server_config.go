@@ -17,6 +17,7 @@ type ServerConfig struct {
 	Description      string              `yaml:"description" json:"description"`           // 描述
 	AliasServerNames []string            `yaml:"aliasServerNames" json:"aliasServerNames"` // 关联的域名，比如CNAME之类的
 	ServerNames      []*ServerNameConfig `yaml:"serverNames" json:"serverNames"`           // 域名
+	SupportCNAME     bool                `yaml:"supportCNAME" json:"supportCNAME"`         // 是否支持CNAME
 
 	// 前端协议
 	HTTP  *HTTPProtocolConfig  `yaml:"http" json:"http"`   // HTTP配置
@@ -41,7 +42,19 @@ type ServerConfig struct {
 	HTTPCachePolicyId int64            `yaml:"httpCachePolicyId" json:"httpCachePolicyId"`
 	HTTPCachePolicy   *HTTPCachePolicy `yaml:"httpCachePolicy" json:"httpCachePolicy"` // 通过 HTTPCachePolicyId 获取
 
+	// 流量限制
+	TrafficLimit       *TrafficLimitConfig `yaml:"trafficLimit" json:"trafficLimit"`
+	TrafficLimitStatus *TrafficLimitStatus `yaml:"trafficLimitStatus" json:"trafficLimitStatus"`
+
+	// 套餐
+	UserPlan *UserPlanConfig `yaml:"userPlan" json:"userPlan"`
+
+	// 分组
+	Group *ServerGroupConfig `yaml:"group" json:"group"`
+
 	isOk bool
+
+	planId int64
 }
 
 // NewServerConfigFromJSON 从JSON中解析Server配置
@@ -56,6 +69,100 @@ func NewServerConfig() *ServerConfig {
 }
 
 func (this *ServerConfig) Init() error {
+	// 分解Group
+	if this.Group != nil && this.Group.IsOn {
+		// reverse proxy
+		if this.IsHTTPFamily() && this.Group.HTTPReverseProxyRef != nil && this.Group.HTTPReverseProxyRef.IsPrior {
+			this.ReverseProxyRef = this.Group.HTTPReverseProxyRef
+			this.ReverseProxy = this.Group.HTTPReverseProxy
+		}
+		if this.IsTCPFamily() && this.Group.TCPReverseProxyRef != nil && this.Group.TCPReverseProxyRef.IsPrior {
+			this.ReverseProxyRef = this.Group.TCPReverseProxyRef
+			this.ReverseProxy = this.Group.TCPReverseProxy
+		}
+		if this.IsUDPFamily() && this.Group.UDPReverseProxyRef != nil && this.Group.UDPReverseProxyRef.IsPrior {
+			this.ReverseProxyRef = this.Group.UDPReverseProxyRef
+			this.ReverseProxy = this.Group.UDPReverseProxy
+		}
+
+		// web
+		if this.Group.Web != nil {
+			if this.Web == nil {
+				this.Web = this.Group.Web
+			} else {
+				var groupWeb = this.Group.Web
+
+				// root
+				if groupWeb.Root != nil && groupWeb.Root.IsPrior {
+					this.Web.Root = groupWeb.Root
+				}
+
+				// waf
+				if groupWeb.FirewallRef != nil && groupWeb.FirewallRef.IsPrior {
+					this.Web.FirewallRef = groupWeb.FirewallRef
+					this.Web.FirewallPolicy = groupWeb.FirewallPolicy
+				}
+
+				// cache
+				if groupWeb.Cache != nil && groupWeb.Cache.IsPrior {
+					this.Web.Cache = groupWeb.Cache
+				}
+
+				// charset
+				if groupWeb.Charset != nil && groupWeb.Charset.IsPrior {
+					this.Web.Charset = groupWeb.Charset
+				}
+
+				// accessLog
+				if groupWeb.AccessLogRef != nil && groupWeb.AccessLogRef.IsPrior {
+					this.Web.AccessLogRef = groupWeb.AccessLogRef
+				}
+
+				// stat
+				if groupWeb.StatRef != nil && groupWeb.StatRef.IsPrior {
+					this.Web.StatRef = groupWeb.StatRef
+				}
+
+				// compression
+				if groupWeb.Compression != nil && groupWeb.Compression.IsPrior {
+					this.Web.Compression = groupWeb.Compression
+				}
+
+				// headers
+				if groupWeb.RequestHeaderPolicyRef != nil && groupWeb.RequestHeaderPolicyRef.IsPrior {
+					this.Web.RequestHeaderPolicyRef = groupWeb.RequestHeaderPolicyRef
+					this.Web.RequestHeaderPolicy = groupWeb.RequestHeaderPolicy
+				}
+				if groupWeb.ResponseHeaderPolicyRef != nil && groupWeb.ResponseHeaderPolicyRef.IsPrior {
+					this.Web.ResponseHeaderPolicyRef = groupWeb.ResponseHeaderPolicyRef
+					this.Web.ResponseHeaderPolicy = groupWeb.ResponseHeaderPolicy
+				}
+
+				// websocket
+				if groupWeb.WebsocketRef != nil && groupWeb.WebsocketRef.IsPrior {
+					this.Web.WebsocketRef = groupWeb.WebsocketRef
+					this.Web.Websocket = groupWeb.Websocket
+				}
+
+				// webp
+				if groupWeb.WebP != nil && groupWeb.WebP.IsPrior {
+					this.Web.WebP = groupWeb.WebP
+				}
+
+				// remote addr
+				if groupWeb.RemoteAddr != nil && groupWeb.RemoteAddr.IsPrior {
+					this.Web.RemoteAddr = groupWeb.RemoteAddr
+				}
+
+				// pages
+				if len(groupWeb.Pages) > 0 || (groupWeb.Shutdown != nil && groupWeb.Shutdown.IsOn) {
+					this.Web.Pages = groupWeb.Pages
+					this.Web.Shutdown = groupWeb.Shutdown
+				}
+			}
+		}
+	}
+
 	if this.HTTP != nil {
 		err := this.HTTP.Init()
 		if err != nil {
@@ -116,6 +223,18 @@ func (this *ServerConfig) Init() error {
 		err := this.Web.Init()
 		if err != nil {
 			return err
+		}
+	}
+
+	// 套餐
+	if this.UserPlan != nil {
+		err := this.UserPlan.Init()
+		if err != nil {
+			return err
+		}
+
+		if this.UserPlan.Plan != nil {
+			this.planId = this.UserPlan.Plan.Id
 		}
 	}
 
@@ -196,35 +315,60 @@ func (this *ServerConfig) IsUDPFamily() bool {
 	return this.UDP != nil
 }
 
-// MatchName 判断是否和域名匹配
-func (this *ServerConfig) MatchName(name string) bool {
-	if len(name) == 0 {
-		return false
-	}
-	if len(this.AliasServerNames) > 0 && configutils.MatchDomains(this.AliasServerNames, name) {
-		return true
-	}
-	for _, serverName := range this.ServerNames {
-		if serverName.Match(name) {
-			return true
+// AllStrictNames 所有严格域名
+func (this *ServerConfig) AllStrictNames() []string {
+	var result = []string{}
+	for _, name := range this.AliasServerNames {
+		if len(name) > 0 {
+			if !configutils.IsFuzzyDomain(name) {
+				result = append(result, name)
+			}
 		}
 	}
-	return false
+	for _, serverName := range this.ServerNames {
+		var name = serverName.Name
+		if len(name) > 0 {
+			if !configutils.IsFuzzyDomain(name) {
+				result = append(result, name)
+			}
+		}
+		for _, name := range serverName.SubNames {
+			if len(name) > 0 {
+				if !configutils.IsFuzzyDomain(name) {
+					result = append(result, name)
+				}
+			}
+		}
+	}
+	return result
 }
 
-// MatchNameStrictly 判断是否严格匹配
-func (this *ServerConfig) MatchNameStrictly(name string) bool {
-	for _, serverName := range this.AliasServerNames {
-		if serverName == name {
-			return true
+// AllFuzzyNames 所有模糊域名
+func (this *ServerConfig) AllFuzzyNames() []string {
+	var result = []string{}
+	for _, name := range this.AliasServerNames {
+		if len(name) > 0 {
+			if configutils.IsFuzzyDomain(name) {
+				result = append(result, name)
+			}
 		}
 	}
 	for _, serverName := range this.ServerNames {
-		if serverName.Name == name {
-			return true
+		var name = serverName.Name
+		if len(name) > 0 {
+			if configutils.IsFuzzyDomain(name) {
+				result = append(result, name)
+			}
+		}
+		for _, name := range serverName.SubNames {
+			if len(name) > 0 {
+				if configutils.IsFuzzyDomain(name) {
+					result = append(result, name)
+				}
+			}
 		}
 	}
-	return false
+	return result
 }
 
 // SSLPolicy SSL信息
@@ -249,4 +393,14 @@ func (this *ServerConfig) FindAndCheckReverseProxy(dataType string) (*ReversePro
 	default:
 		return nil, errors.New("invalid data type:'" + dataType + "'")
 	}
+}
+
+// ShouldCheckTrafficLimit 检查是否需要检查流量限制
+func (this *ServerConfig) ShouldCheckTrafficLimit() bool {
+	return this.TrafficLimit != nil && !this.TrafficLimit.IsEmpty()
+}
+
+// PlanId 套餐ID
+func (this *ServerConfig) PlanId() int64 {
+	return this.planId
 }

@@ -27,12 +27,12 @@ func (this *HTTPFirewallRule) Init() error {
 	case HTTPFirewallRuleOperatorMatch:
 		_, err := regexp.Compile(this.Value)
 		if err != nil {
-			return errors.New("regexp validate failed: " + err.Error())
+			return errors.New("regexp validate failed: " + err.Error() + ", expression: " + this.Value)
 		}
 	case HTTPFirewallRuleOperatorNotMatch:
 		_, err := regexp.Compile(this.Value)
 		if err != nil {
-			return errors.New("regexp validate failed: " + err.Error())
+			return errors.New("regexp validate failed: " + err.Error() + ", expression: " + this.Value)
 		}
 	}
 
@@ -47,4 +47,8 @@ func (this *HTTPFirewallRule) Prefix() string {
 		return pieces[0]
 	}
 	return this.Param
+}
+
+func (this *HTTPFirewallRule) Summary() string {
+	return this.Param + " " + FindRuleOperatorName(this.Operator) + " " + this.Value
 }

@@ -7,7 +7,7 @@ import (
 	"sync"
 )
 
-// 轮询调度算法
+// RoundRobinScheduling 轮询调度算法
 type RoundRobinScheduling struct {
 	Scheduling
 
@@ -19,7 +19,7 @@ type RoundRobinScheduling struct {
 	locker sync.Mutex
 }
 
-// 启动
+// Start 启动
 func (this *RoundRobinScheduling) Start() {
 	lists.Sort(this.Candidates, func(i int, j int) bool {
 		c1 := this.Candidates[i]
@@ -41,7 +41,7 @@ func (this *RoundRobinScheduling) Start() {
 	this.count = uint(len(this.Candidates))
 }
 
-// 获取下一个候选对象
+// Next 获取下一个候选对象
 func (this *RoundRobinScheduling) Next(call *shared.RequestCall) CandidateInterface {
 	if this.count == 0 {
 		return nil
@@ -69,12 +69,12 @@ func (this *RoundRobinScheduling) Next(call *shared.RequestCall) CandidateInterf
 	return c
 }
 
-// 获取简要信息
+// Summary 获取简要信息
 func (this *RoundRobinScheduling) Summary() maps.Map {
 	return maps.Map{
 		"code":        "roundRobin",
 		"name":        "RoundRobin轮询算法",
 		"description": "根据权重，依次分配源站",
-		"networks":    []string{"http", "tcp"},
+		"networks":    []string{"http", "tcp", "udp", "unix"},
 	}
 }

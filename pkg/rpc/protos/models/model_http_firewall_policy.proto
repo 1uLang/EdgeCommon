@@ -6,8 +6,10 @@ package pb;
 message HTTPFirewallPolicy {
 	int64 id = 1;
 	string name = 2;
+	string mode = 7;
 	bool isOn = 3;
 	string description = 4;
 	bytes inboundJSON = 5;
 	bytes outboundJSON = 6;
+	int64 serverId = 8;
 }

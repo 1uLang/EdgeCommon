@@ -5,8 +5,11 @@ pkg/
   messageconfigs - 消息通知相关配置
   monitorconfigs - 监控相关配置
   nodeconfigs - 边缘节点相关配置
+  nodeutils - 边缘节点相关函数
   serverconfigs - 网站服务相关配置
   systemconfigs - 系统全局配置
+  reporterconfigs - 区域监控终端配置
+  userconfigs - 用户相关配置
   
   configutils/ - 配置公共函数等
   errors/  - 错误处理

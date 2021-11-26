@@ -22,6 +22,7 @@ type NodeConfig struct {
 	Secret                 string                        `yaml:"secret" json:"secret"`
 	IsOn                   bool                          `yaml:"isOn" json:"isOn"`
 	Servers                []*serverconfigs.ServerConfig `yaml:"servers" json:"servers"`
+	SupportCNAME           bool                          `yaml:"supportCNAME" json:"supportCNAME"`
 	Version                int64                         `yaml:"version" json:"version"`
 	Name                   string                        `yaml:"name" json:"name"`
 	MaxCPU                 int32                         `yaml:"maxCPU" json:"maxCPU"`
@@ -38,6 +39,7 @@ type NodeConfig struct {
 	TOA                  *TOAConfig                              `yaml:"toa" json:"toa"`
 	SystemServices       map[string]maps.Map                     `yaml:"systemServices" json:"systemServices"` // 系统服务配置 type => params
 	FirewallActions      []*firewallconfigs.FirewallActionConfig `yaml:"firewallActions" json:"firewallActions"`
+	TimeZone             string                                  `yaml:"timeZone" json:"timeZone"`
 
 	MetricItems []*serverconfigs.MetricItemConfig `yaml:"metricItems" json:"metricItems"`
 
@@ -210,8 +212,8 @@ func (this *NodeConfig) Init() error {
 }
 
 // AvailableGroups 根据网络地址和协议分组
-func (this *NodeConfig) AvailableGroups() []*serverconfigs.ServerGroup {
-	groupMapping := map[string]*serverconfigs.ServerGroup{} // protocol://addr => Server Group
+func (this *NodeConfig) AvailableGroups() []*serverconfigs.ServerAddressGroup {
+	groupMapping := map[string]*serverconfigs.ServerAddressGroup{} // protocol://addr => Server Group
 	for _, server := range this.Servers {
 		if !server.IsOk() || !server.IsOn {
 			continue
@@ -221,13 +223,13 @@ func (this *NodeConfig) AvailableGroups() []*serverconfigs.ServerGroup {
 			if ok {
 				group.Add(server)
 			} else {
-				group = serverconfigs.NewServerGroup(addr)
+				group = serverconfigs.NewServerAddressGroup(addr)
 				group.Add(server)
 			}
 			groupMapping[addr] = group
 		}
 	}
-	result := []*serverconfigs.ServerGroup{}
+	result := []*serverconfigs.ServerAddressGroup{}
 	for _, group := range groupMapping {
 		result = append(result, group)
 	}
@@ -283,6 +285,7 @@ func (this *NodeConfig) lookupWeb(server *serverconfigs.ServerConfig, web *serve
 		// 复用节点的拦截选项设置
 		if web.FirewallPolicy.BlockOptions == nil && server.HTTPFirewallPolicy != nil && server.HTTPFirewallPolicy.BlockOptions != nil {
 			web.FirewallPolicy.BlockOptions = server.HTTPFirewallPolicy.BlockOptions
+			web.FirewallPolicy.Mode = server.HTTPFirewallPolicy.Mode
 		}
 		this.firewallPolicies = append(this.firewallPolicies, web.FirewallPolicy)
 	}

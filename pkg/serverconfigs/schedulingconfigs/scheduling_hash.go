@@ -3,25 +3,30 @@ package schedulingconfigs
 import (
 	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
 	"github.com/iwind/TeaGo/maps"
+	"github.com/iwind/TeaGo/rands"
 	"hash/crc32"
 )
 
-// Hash调度算法
+// HashScheduling Hash调度算法
 type HashScheduling struct {
 	Scheduling
 
-	count uint32
+	count int
 }
 
-// 启动
+// Start 启动
 func (this *HashScheduling) Start() {
-	this.count = uint32(len(this.Candidates))
+	this.count = len(this.Candidates)
 }
 
-// 获取下一个候选对象
+// Next 获取下一个候选对象
 func (this *HashScheduling) Next(call *shared.RequestCall) CandidateInterface {
 	if this.count == 0 {
 		return nil
+	}
+
+	if call == nil || call.Options == nil {
+		return this.Candidates[rands.Int(0, this.count-1)]
 	}
 
 	key := call.Options.GetString("key")
@@ -31,10 +36,10 @@ func (this *HashScheduling) Next(call *shared.RequestCall) CandidateInterface {
 	}
 
 	sum := crc32.ChecksumIEEE([]byte(key))
-	return this.Candidates[sum%this.count]
+	return this.Candidates[sum%uint32(this.count)]
 }
 
-// 获取简要信息
+// Summary 获取简要信息
 func (this *HashScheduling) Summary() maps.Map {
 	return maps.Map{
 		"code":        "hash",

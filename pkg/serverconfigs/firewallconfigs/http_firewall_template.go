@@ -1,5 +1,7 @@
 package firewallconfigs
 
+import "github.com/iwind/TeaGo/maps"
+
 type HTTPFirewallRuleConnector = string
 
 const (
@@ -431,6 +433,30 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 			group.AddRuleSet(set)
 		}
 
+		{
+			set := &HTTPFirewallRuleSet{}
+			set.IsOn = true
+			set.Name = "空Agent"
+			set.Code = "20002"
+			set.Connector = HTTPFirewallRuleConnectorOr
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code: HTTPFirewallActionBlock,
+				},
+			}
+
+			// 空Agent
+			set.AddRule(&HTTPFirewallRule{
+				IsOn:              true,
+				Param:             "${userAgent}",
+				Operator:          HTTPFirewallRuleOperatorEqString,
+				Value:             "",
+				IsCaseInsensitive: false,
+			})
+
+			group.AddRuleSet(set)
+		}
+
 		policy.Inbound.Groups = append(policy.Inbound.Groups, group)
 	}
 
@@ -445,24 +471,27 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 		{
 			set := &HTTPFirewallRuleSet{}
 			set.IsOn = true
-			set.Name = "CC请求数"
-			set.Description = "限制单IP在一定时间内的请求数"
+			set.Name = "CC单URL请求数"
+			set.Description = "限制单IP在一定时间内对单URL的请求数"
 			set.Code = "8001"
 			set.Connector = HTTPFirewallRuleConnectorAnd
 			set.Actions = []*HTTPFirewallActionConfig{
 				{
 					Code: HTTPFirewallActionBlock,
+					Options: maps.Map{
+						"timeout": 600,
+					},
 				},
 			}
 			set.AddRule(&HTTPFirewallRule{
 				IsOn:     true,
 				Param:    "${cc2}",
 				Operator: HTTPFirewallRuleOperatorGt,
-				Value:    "1000",
+				Value:    "120",
 				CheckpointOptions: map[string]interface{}{
 					"keys":      []string{"${remoteAddr}", "${requestPath}"},
 					"period":    "60",
-					"threshold": 1000,
+					"threshold": 120,
 				},
 				IsCaseInsensitive: false,
 			})
@@ -492,6 +521,134 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 				Param:             "${remoteAddr}",
 				Operator:          HTTPFirewallRuleOperatorNotIPRange,
 				Value:             `172.16.0.1/12`,
+				IsCaseInsensitive: false,
+			})
+
+			group.AddRuleSet(set)
+		}
+		{
+			set := &HTTPFirewallRuleSet{}
+			set.IsOn = true
+			set.Name = "CC请求数"
+			set.Description = "限制单IP在一定时间内的总体请求数"
+			set.Code = "8002"
+			set.Connector = HTTPFirewallRuleConnectorAnd
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code: HTTPFirewallActionBlock,
+					Options: maps.Map{
+						"timeout": 600,
+					},
+				},
+			}
+			set.AddRule(&HTTPFirewallRule{
+				IsOn:     true,
+				Param:    "${cc2}",
+				Operator: HTTPFirewallRuleOperatorGt,
+				Value:    "1200",
+				CheckpointOptions: map[string]interface{}{
+					"keys":      []string{"${remoteAddr}"},
+					"period":    "60",
+					"threshold": 1200,
+				},
+				IsCaseInsensitive: false,
+			})
+			set.AddRule(&HTTPFirewallRule{
+				IsOn:              true,
+				Param:             "${remoteAddr}",
+				Operator:          HTTPFirewallRuleOperatorNotIPRange,
+				Value:             `127.0.0.1/8`,
+				IsCaseInsensitive: false,
+			})
+			set.AddRule(&HTTPFirewallRule{
+				IsOn:              true,
+				Param:             "${remoteAddr}",
+				Operator:          HTTPFirewallRuleOperatorNotIPRange,
+				Value:             `192.168.0.1/16`,
+				IsCaseInsensitive: false,
+			})
+			set.AddRule(&HTTPFirewallRule{
+				IsOn:              true,
+				Param:             "${remoteAddr}",
+				Operator:          HTTPFirewallRuleOperatorNotIPRange,
+				Value:             `10.0.0.1/8`,
+				IsCaseInsensitive: false,
+			})
+			set.AddRule(&HTTPFirewallRule{
+				IsOn:              true,
+				Param:             "${remoteAddr}",
+				Operator:          HTTPFirewallRuleOperatorNotIPRange,
+				Value:             `172.16.0.1/12`,
+				IsCaseInsensitive: false,
+			})
+
+			group.AddRuleSet(set)
+		}
+
+		{
+			set := &HTTPFirewallRuleSet{}
+			set.IsOn = true
+			set.Name = "随机URL攻击"
+			set.Description = "限制用户使用随机URL访问网站"
+			set.Code = "8003"
+			set.Connector = HTTPFirewallRuleConnectorAnd
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code: HTTPFirewallActionBlock,
+					Options: maps.Map{
+						"timeout": 600,
+					},
+				},
+			}
+
+			set.AddRule(&HTTPFirewallRule{
+				IsOn:              true,
+				Param:             "${args}",
+				Operator:          HTTPFirewallRuleOperatorMatch,
+				Value:             `^[0-9a-zA-Z_\-.]{12,}$`,
+				IsCaseInsensitive: false,
+			})
+
+			group.AddRuleSet(set)
+		}
+
+		policy.Inbound.Groups = append(policy.Inbound.Groups, group)
+	}
+
+	// custom
+	{
+		group := &HTTPFirewallRuleGroup{}
+		group.IsOn = true
+		group.Name = "防盗链"
+		group.Description = "防止第三方网站引用本站资源。"
+		group.Code = "referer"
+
+		{
+			set := &HTTPFirewallRuleSet{}
+			set.IsOn = true
+			set.Name = "防盗链"
+			set.Description = "防止第三方网站引用本站资源"
+			set.Code = "9001"
+			set.Connector = HTTPFirewallRuleConnectorAnd
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code: HTTPFirewallActionBlock,
+					Options: maps.Map{
+						"timeout": 60,
+					},
+				},
+			}
+
+			set.AddRule(&HTTPFirewallRule{
+				IsOn:     true,
+				Param:    "${refererBlock}",
+				Operator: HTTPFirewallRuleOperatorEq,
+				Value:    "0",
+				CheckpointOptions: map[string]interface{}{
+					"allowEmpty":      true,
+					"allowSameDomain": true,
+					"allowDomains":    []string{"*"},
+				},
 				IsCaseInsensitive: false,
 			})
 
