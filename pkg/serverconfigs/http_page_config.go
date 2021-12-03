@@ -1,6 +1,6 @@
 package serverconfigs
 
-import "github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
+import "github.com/1uLang/EdgeCommon/pkg/serverconfigs/shared"
 
 // HTTPPageConfig 特殊页面配置
 // TODO 需要支持Header定义

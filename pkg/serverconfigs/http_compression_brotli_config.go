@@ -2,7 +2,7 @@
 
 package serverconfigs
 
-import "github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
+import "github.com/1uLang/EdgeCommon/pkg/serverconfigs/shared"
 
 type HTTPBrotliCompressionConfig struct {
 	Id   int64 `yaml:"id" json:"id"` // ID

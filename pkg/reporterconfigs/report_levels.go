@@ -3,7 +3,7 @@
 package reporterconfigs
 
 import (
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
+	"github.com/1uLang/EdgeCommon/pkg/serverconfigs/shared"
 )
 
 type ReportLevel = string

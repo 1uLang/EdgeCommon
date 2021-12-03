@@ -3,8 +3,8 @@ package dao
 import (
 	"context"
 	"encoding/json"
-	"github.com/TeaOSLab/EdgeCommon/pkg/rpc/pb"
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/firewallconfigs"
+	"github.com/1uLang/EdgeCommon/pkg/rpc/pb"
+	"github.com/1uLang/EdgeCommon/pkg/serverconfigs/firewallconfigs"
 )
 
 var SharedHTTPFirewallRuleGroupDAO = new(HTTPFirewallRuleGroupDAO)

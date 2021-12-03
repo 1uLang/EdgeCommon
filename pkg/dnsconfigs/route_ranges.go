@@ -2,7 +2,7 @@
 
 package dnsconfigs
 
-import "github.com/TeaOSLab/EdgeCommon/pkg/configutils"
+import "github.com/1uLang/EdgeCommon/pkg/configutils"
 
 type RouteRangeType = string
 

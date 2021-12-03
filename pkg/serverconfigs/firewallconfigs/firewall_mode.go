@@ -2,7 +2,7 @@
 
 package firewallconfigs
 
-import "github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
+import "github.com/1uLang/EdgeCommon/pkg/serverconfigs/shared"
 
 // FirewallMode 模式
 type FirewallMode = string
