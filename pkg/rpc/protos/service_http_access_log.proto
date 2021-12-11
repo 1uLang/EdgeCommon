@@ -15,6 +15,9 @@ service HTTPAccessLogService {
 
 	// 查找单个日志
 	rpc findHTTPAccessLog (FindHTTPAccessLogRequest) returns (FindHTTPAccessLogResponse);
+
+	// 列出单页访问日志 新增 时间条件
+	rpc searchHTTPAccessLogs (SearchHTTPAccessLogsRequest) returns (SearchHTTPAccessLogsResponse);
 }
 
 // 创建访问日志
@@ -58,4 +61,23 @@ message FindHTTPAccessLogRequest {
 
 message FindHTTPAccessLogResponse {
 	HTTPAccessLog httpAccessLog = 1;
+}
+// 列出往前的单页访问日志
+message SearchHTTPAccessLogsRequest {
+	string requestId = 1; // 上一页请求ID，可选
+	int64 serverId = 2; // 服务ID
+	int64 size = 3; // 单页条数
+	string day = 4; // 日期，格式YYYYMMDD
+	int64 userId = 5; // 用户ID
+	string ip = 6;	//攻击ip
+	string domain = 7;	//被攻击域名
+	uint64  startAt = 8;	//起始时间
+	uint64 endAt =9;	//结束时间
+}
+
+message SearchHTTPAccessLogsResponse {
+	repeated HTTPAccessLog accessLogs = 1 [deprecated = true];
+	repeated HTTPAccessLog httpAccessLogs = 4;
+	string requestId = 2;
+	bool hasMore = 3;
 }
