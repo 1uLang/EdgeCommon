@@ -3,10 +3,10 @@ package dao
 import (
 	"context"
 	"encoding/json"
-	"github.com/TeaOSLab/EdgeCommon/pkg/errors"
-	"github.com/TeaOSLab/EdgeCommon/pkg/rpc/pb"
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/firewallconfigs"
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/ipconfigs"
+	"github.com/1uLang/EdgeCommon/pkg/errors"
+	"github.com/1uLang/EdgeCommon/pkg/rpc/pb"
+	"github.com/1uLang/EdgeCommon/pkg/serverconfigs/firewallconfigs"
+	"github.com/1uLang/EdgeCommon/pkg/serverconfigs/ipconfigs"
 )
 
 var SharedIPListDAO = new(IPListDAO)

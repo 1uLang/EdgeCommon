@@ -1,7 +1,7 @@
 package sslconfigs
 
 import (
-	"github.com/TeaOSLab/EdgeCommon/pkg/configutils"
+	"github.com/1uLang/EdgeCommon/pkg/configutils"
 	"strconv"
 	"strings"
 )

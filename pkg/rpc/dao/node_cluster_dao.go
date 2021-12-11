@@ -2,7 +2,7 @@ package dao
 
 import (
 	"context"
-	"github.com/TeaOSLab/EdgeCommon/pkg/rpc/pb"
+	"github.com/1uLang/EdgeCommon/pkg/rpc/pb"
 )
 
 var SharedNodeClusterDAO = new(NodeClusterDAO)

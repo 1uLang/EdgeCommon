@@ -2,7 +2,7 @@ package schedulingconfigs
 
 import (
 	"fmt"
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
+	"github.com/1uLang/EdgeCommon/pkg/serverconfigs/shared"
 	"math/rand"
 	"testing"
 	"time"
@@ -34,12 +34,12 @@ func TestHashScheduling_Next(t *testing.T) {
 	}
 
 	rand.Seed(time.Now().UnixNano())
-	for i := 0; i < 1000000; i ++ {
+	for i := 0; i < 1000000; i++ {
 		call := shared.NewRequestCall()
 		call.Options["key"] = "192.168.1." + fmt.Sprintf("%d", rand.Int())
 
 		c := s.Next(call)
-		hits[c.(*TestCandidate).Name] ++
+		hits[c.(*TestCandidate).Name]++
 	}
 	t.Log(hits)
 }

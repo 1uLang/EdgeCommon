@@ -2,7 +2,7 @@
 
 package serverconfigs
 
-import "github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
+import "github.com/1uLang/EdgeCommon/pkg/serverconfigs/shared"
 
 type MetricChartType = string
 

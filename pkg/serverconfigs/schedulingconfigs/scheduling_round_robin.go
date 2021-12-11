@@ -1,7 +1,7 @@
 package schedulingconfigs
 
 import (
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
+	"github.com/1uLang/EdgeCommon/pkg/serverconfigs/shared"
 	"github.com/iwind/TeaGo/lists"
 	"github.com/iwind/TeaGo/maps"
 	"sync"
@@ -64,7 +64,7 @@ func (this *RoundRobinScheduling) Next(call *shared.RequestCall) CandidateInterf
 	}
 
 	c := this.Candidates[this.index]
-	this.currentWeights[this.index] --
+	this.currentWeights[this.index]--
 	this.index++
 	return c
 }
