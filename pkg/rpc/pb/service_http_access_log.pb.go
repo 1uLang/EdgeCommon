@@ -615,6 +615,446 @@ func (x *SearchHTTPAccessLogsResponse) GetHasMore() bool {
 	return false
 }
 
+type StatisticsHTTPAccessTopRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Day  string `protobuf:"bytes,1,opt,name=day,proto3" json:"day,omitempty"`    //查询日期
+	User int64  `protobuf:"varint,2,opt,name=user,proto3" json:"user,omitempty"` //用户id
+	Top  int32  `protobuf:"varint,3,opt,name=top,proto3" json:"top,omitempty"`   //排行前几
+}
+
+func (x *StatisticsHTTPAccessTopRequest) Reset() {
+	*x = StatisticsHTTPAccessTopRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_service_http_access_log_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StatisticsHTTPAccessTopRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StatisticsHTTPAccessTopRequest) ProtoMessage() {}
+
+func (x *StatisticsHTTPAccessTopRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_service_http_access_log_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StatisticsHTTPAccessTopRequest.ProtoReflect.Descriptor instead.
+func (*StatisticsHTTPAccessTopRequest) Descriptor() ([]byte, []int) {
+	return file_service_http_access_log_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *StatisticsHTTPAccessTopRequest) GetDay() string {
+	if x != nil {
+		return x.Day
+	}
+	return ""
+}
+
+func (x *StatisticsHTTPAccessTopRequest) GetUser() int64 {
+	if x != nil {
+		return x.User
+	}
+	return 0
+}
+
+func (x *StatisticsHTTPAccessTopRequest) GetTop() int32 {
+	if x != nil {
+		return x.Top
+	}
+	return 0
+}
+
+type StatisticsHTTPAccessTopResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Ip     *AccessTop `protobuf:"bytes,1,opt,name=ip,proto3" json:"ip,omitempty"`         //ip排名
+	Region *AccessTop `protobuf:"bytes,2,opt,name=region,proto3" json:"region,omitempty"` //区域排名
+}
+
+func (x *StatisticsHTTPAccessTopResponse) Reset() {
+	*x = StatisticsHTTPAccessTopResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_service_http_access_log_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StatisticsHTTPAccessTopResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StatisticsHTTPAccessTopResponse) ProtoMessage() {}
+
+func (x *StatisticsHTTPAccessTopResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_service_http_access_log_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StatisticsHTTPAccessTopResponse.ProtoReflect.Descriptor instead.
+func (*StatisticsHTTPAccessTopResponse) Descriptor() ([]byte, []int) {
+	return file_service_http_access_log_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *StatisticsHTTPAccessTopResponse) GetIp() *AccessTop {
+	if x != nil {
+		return x.Ip
+	}
+	return nil
+}
+
+func (x *StatisticsHTTPAccessTopResponse) GetRegion() *AccessTop {
+	if x != nil {
+		return x.Region
+	}
+	return nil
+}
+
+type AccessTop struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Names  []string `protobuf:"bytes,1,rep,name=names,proto3" json:"names,omitempty"`           //值
+	Counts []int64  `protobuf:"varint,2,rep,packed,name=counts,proto3" json:"counts,omitempty"` //次数
+}
+
+func (x *AccessTop) Reset() {
+	*x = AccessTop{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_service_http_access_log_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AccessTop) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AccessTop) ProtoMessage() {}
+
+func (x *AccessTop) ProtoReflect() protoreflect.Message {
+	mi := &file_service_http_access_log_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AccessTop.ProtoReflect.Descriptor instead.
+func (*AccessTop) Descriptor() ([]byte, []int) {
+	return file_service_http_access_log_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *AccessTop) GetNames() []string {
+	if x != nil {
+		return x.Names
+	}
+	return nil
+}
+
+func (x *AccessTop) GetCounts() []int64 {
+	if x != nil {
+		return x.Counts
+	}
+	return nil
+}
+
+type StatisticsHTTPAccessRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Days []string `protobuf:"bytes,1,rep,name=days,proto3" json:"days,omitempty"`  //查询日期
+	User int64    `protobuf:"varint,2,opt,name=user,proto3" json:"user,omitempty"` //用户id
+}
+
+func (x *StatisticsHTTPAccessRequest) Reset() {
+	*x = StatisticsHTTPAccessRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_service_http_access_log_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StatisticsHTTPAccessRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StatisticsHTTPAccessRequest) ProtoMessage() {}
+
+func (x *StatisticsHTTPAccessRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_service_http_access_log_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StatisticsHTTPAccessRequest.ProtoReflect.Descriptor instead.
+func (*StatisticsHTTPAccessRequest) Descriptor() ([]byte, []int) {
+	return file_service_http_access_log_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *StatisticsHTTPAccessRequest) GetDays() []string {
+	if x != nil {
+		return x.Days
+	}
+	return nil
+}
+
+func (x *StatisticsHTTPAccessRequest) GetUser() int64 {
+	if x != nil {
+		return x.User
+	}
+	return 0
+}
+
+type StatisticsHTTPAccessResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Counts []int64 `protobuf:"varint,1,rep,packed,name=counts,proto3" json:"counts,omitempty"` //次数
+}
+
+func (x *StatisticsHTTPAccessResponse) Reset() {
+	*x = StatisticsHTTPAccessResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_service_http_access_log_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StatisticsHTTPAccessResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StatisticsHTTPAccessResponse) ProtoMessage() {}
+
+func (x *StatisticsHTTPAccessResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_service_http_access_log_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StatisticsHTTPAccessResponse.ProtoReflect.Descriptor instead.
+func (*StatisticsHTTPAccessResponse) Descriptor() ([]byte, []int) {
+	return file_service_http_access_log_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *StatisticsHTTPAccessResponse) GetCounts() []int64 {
+	if x != nil {
+		return x.Counts
+	}
+	return nil
+}
+
+type StatisticsHTTPAccessTypeRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Day  string `protobuf:"bytes,1,opt,name=day,proto3" json:"day,omitempty"`    //查询日期
+	User int64  `protobuf:"varint,2,opt,name=user,proto3" json:"user,omitempty"` //用户id
+}
+
+func (x *StatisticsHTTPAccessTypeRequest) Reset() {
+	*x = StatisticsHTTPAccessTypeRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_service_http_access_log_proto_msgTypes[13]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StatisticsHTTPAccessTypeRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StatisticsHTTPAccessTypeRequest) ProtoMessage() {}
+
+func (x *StatisticsHTTPAccessTypeRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_service_http_access_log_proto_msgTypes[13]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StatisticsHTTPAccessTypeRequest.ProtoReflect.Descriptor instead.
+func (*StatisticsHTTPAccessTypeRequest) Descriptor() ([]byte, []int) {
+	return file_service_http_access_log_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *StatisticsHTTPAccessTypeRequest) GetDay() string {
+	if x != nil {
+		return x.Day
+	}
+	return ""
+}
+
+func (x *StatisticsHTTPAccessTypeRequest) GetUser() int64 {
+	if x != nil {
+		return x.User
+	}
+	return 0
+}
+
+type StatisticsHTTPAccessTypeResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Attacks []*HTTPAccessType `protobuf:"bytes,1,rep,name=attacks,proto3" json:"attacks,omitempty"` //攻击
+}
+
+func (x *StatisticsHTTPAccessTypeResponse) Reset() {
+	*x = StatisticsHTTPAccessTypeResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_service_http_access_log_proto_msgTypes[14]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StatisticsHTTPAccessTypeResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StatisticsHTTPAccessTypeResponse) ProtoMessage() {}
+
+func (x *StatisticsHTTPAccessTypeResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_service_http_access_log_proto_msgTypes[14]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StatisticsHTTPAccessTypeResponse.ProtoReflect.Descriptor instead.
+func (*StatisticsHTTPAccessTypeResponse) Descriptor() ([]byte, []int) {
+	return file_service_http_access_log_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *StatisticsHTTPAccessTypeResponse) GetAttacks() []*HTTPAccessType {
+	if x != nil {
+		return x.Attacks
+	}
+	return nil
+}
+
+type HTTPAccessType struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Code  string `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`    //攻击类型分组code
+	Name  string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`    //攻击类型名称
+	Count int64  `protobuf:"varint,3,opt,name=count,proto3" json:"count,omitempty"` //攻击次数
+}
+
+func (x *HTTPAccessType) Reset() {
+	*x = HTTPAccessType{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_service_http_access_log_proto_msgTypes[15]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *HTTPAccessType) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HTTPAccessType) ProtoMessage() {}
+
+func (x *HTTPAccessType) ProtoReflect() protoreflect.Message {
+	mi := &file_service_http_access_log_proto_msgTypes[15]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HTTPAccessType.ProtoReflect.Descriptor instead.
+func (*HTTPAccessType) Descriptor() ([]byte, []int) {
+	return file_service_http_access_log_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *HTTPAccessType) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *HTTPAccessType) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *HTTPAccessType) GetCount() int64 {
+	if x != nil {
+		return x.Count
+	}
+	return 0
+}
+
 var File_service_http_access_log_proto protoreflect.FileDescriptor
 
 var file_service_http_access_log_proto_rawDesc = []byte{
@@ -707,32 +1147,89 @@ var file_service_http_access_log_proto_rawDesc = []byte{
 	0x73, 0x4c, 0x6f, 0x67, 0x73, 0x12, 0x1c, 0x0a, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
 	0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73,
 	0x74, 0x49, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x68, 0x61, 0x73, 0x4d, 0x6f, 0x72, 0x65, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x68, 0x61, 0x73, 0x4d, 0x6f, 0x72, 0x65, 0x32, 0xf3, 0x02,
-	0x0a, 0x14, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x4c, 0x6f, 0x67, 0x53,
-	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x59, 0x0a, 0x14, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65,
-	0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x4c, 0x6f, 0x67, 0x73, 0x12, 0x1f,
-	0x2e, 0x70, 0x62, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63,
-	0x63, 0x65, 0x73, 0x73, 0x4c, 0x6f, 0x67, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x20, 0x2e, 0x70, 0x62, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x48, 0x54, 0x54, 0x50, 0x41,
-	0x63, 0x63, 0x65, 0x73, 0x73, 0x4c, 0x6f, 0x67, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x53, 0x0a, 0x12, 0x6c, 0x69, 0x73, 0x74, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63,
-	0x65, 0x73, 0x73, 0x4c, 0x6f, 0x67, 0x73, 0x12, 0x1d, 0x2e, 0x70, 0x62, 0x2e, 0x4c, 0x69, 0x73,
-	0x74, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x4c, 0x6f, 0x67, 0x73, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1e, 0x2e, 0x70, 0x62, 0x2e, 0x4c, 0x69, 0x73, 0x74,
-	0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x4c, 0x6f, 0x67, 0x73, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x50, 0x0a, 0x11, 0x66, 0x69, 0x6e, 0x64, 0x48, 0x54,
-	0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x4c, 0x6f, 0x67, 0x12, 0x1c, 0x2e, 0x70, 0x62,
-	0x2e, 0x46, 0x69, 0x6e, 0x64, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x4c,
-	0x6f, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1d, 0x2e, 0x70, 0x62, 0x2e, 0x46,
-	0x69, 0x6e, 0x64, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x4c, 0x6f, 0x67,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x59, 0x0a, 0x14, 0x73, 0x65, 0x61, 0x72,
-	0x63, 0x68, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x4c, 0x6f, 0x67, 0x73,
-	0x12, 0x1f, 0x2e, 0x70, 0x62, 0x2e, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x48, 0x54, 0x54, 0x50,
-	0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x4c, 0x6f, 0x67, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x20, 0x2e, 0x70, 0x62, 0x2e, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x48, 0x54, 0x54,
-	0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x4c, 0x6f, 0x67, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x68, 0x61, 0x73, 0x4d, 0x6f, 0x72, 0x65, 0x22, 0x58, 0x0a,
+	0x1e, 0x53, 0x74, 0x61, 0x74, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x48, 0x54, 0x54, 0x50, 0x41,
+	0x63, 0x63, 0x65, 0x73, 0x73, 0x54, 0x6f, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
+	0x10, 0x0a, 0x03, 0x64, 0x61, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x64, 0x61,
+	0x79, 0x12, 0x12, 0x0a, 0x04, 0x75, 0x73, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52,
+	0x04, 0x75, 0x73, 0x65, 0x72, 0x12, 0x10, 0x0a, 0x03, 0x74, 0x6f, 0x70, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x05, 0x52, 0x03, 0x74, 0x6f, 0x70, 0x22, 0x67, 0x0a, 0x1f, 0x53, 0x74, 0x61, 0x74, 0x69,
+	0x73, 0x74, 0x69, 0x63, 0x73, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x54,
+	0x6f, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1d, 0x0a, 0x02, 0x69, 0x70,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x70, 0x62, 0x2e, 0x41, 0x63, 0x63, 0x65,
+	0x73, 0x73, 0x54, 0x6f, 0x70, 0x52, 0x02, 0x69, 0x70, 0x12, 0x25, 0x0a, 0x06, 0x72, 0x65, 0x67,
+	0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x70, 0x62, 0x2e, 0x41,
+	0x63, 0x63, 0x65, 0x73, 0x73, 0x54, 0x6f, 0x70, 0x52, 0x06, 0x72, 0x65, 0x67, 0x69, 0x6f, 0x6e,
+	0x22, 0x39, 0x0a, 0x09, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x54, 0x6f, 0x70, 0x12, 0x14, 0x0a,
+	0x05, 0x6e, 0x61, 0x6d, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x05, 0x6e, 0x61,
+	0x6d, 0x65, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x73, 0x18, 0x02, 0x20,
+	0x03, 0x28, 0x03, 0x52, 0x06, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x73, 0x22, 0x45, 0x0a, 0x1b, 0x53,
+	0x74, 0x61, 0x74, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63,
+	0x65, 0x73, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x64, 0x61,
+	0x79, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x04, 0x64, 0x61, 0x79, 0x73, 0x12, 0x12,
+	0x0a, 0x04, 0x75, 0x73, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x04, 0x75, 0x73,
+	0x65, 0x72, 0x22, 0x36, 0x0a, 0x1c, 0x53, 0x74, 0x61, 0x74, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73,
+	0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03,
+	0x28, 0x03, 0x52, 0x06, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x73, 0x22, 0x47, 0x0a, 0x1f, 0x53, 0x74,
+	0x61, 0x74, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65,
+	0x73, 0x73, 0x54, 0x79, 0x70, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a,
+	0x03, 0x64, 0x61, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x64, 0x61, 0x79, 0x12,
+	0x12, 0x0a, 0x04, 0x75, 0x73, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x04, 0x75,
+	0x73, 0x65, 0x72, 0x22, 0x50, 0x0a, 0x20, 0x53, 0x74, 0x61, 0x74, 0x69, 0x73, 0x74, 0x69, 0x63,
+	0x73, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x54, 0x79, 0x70, 0x65, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2c, 0x0a, 0x07, 0x61, 0x74, 0x74, 0x61, 0x63,
+	0x6b, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x70, 0x62, 0x2e, 0x48, 0x54,
+	0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x54, 0x79, 0x70, 0x65, 0x52, 0x07, 0x61, 0x74,
+	0x74, 0x61, 0x63, 0x6b, 0x73, 0x22, 0x4e, 0x0a, 0x0e, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63,
+	0x65, 0x73, 0x73, 0x54, 0x79, 0x70, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x6e,
+	0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12,
+	0x14, 0x0a, 0x05, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x05,
+	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x32, 0x99, 0x05, 0x0a, 0x14, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63,
+	0x63, 0x65, 0x73, 0x73, 0x4c, 0x6f, 0x67, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x59,
+	0x0a, 0x14, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65,
+	0x73, 0x73, 0x4c, 0x6f, 0x67, 0x73, 0x12, 0x1f, 0x2e, 0x70, 0x62, 0x2e, 0x43, 0x72, 0x65, 0x61,
+	0x74, 0x65, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x4c, 0x6f, 0x67, 0x73,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x70, 0x62, 0x2e, 0x43, 0x72, 0x65,
+	0x61, 0x74, 0x65, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x4c, 0x6f, 0x67,
+	0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x53, 0x0a, 0x12, 0x6c, 0x69, 0x73,
+	0x74, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x4c, 0x6f, 0x67, 0x73, 0x12,
+	0x1d, 0x2e, 0x70, 0x62, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63,
+	0x65, 0x73, 0x73, 0x4c, 0x6f, 0x67, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1e,
+	0x2e, 0x70, 0x62, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65,
+	0x73, 0x73, 0x4c, 0x6f, 0x67, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x50,
+	0x0a, 0x11, 0x66, 0x69, 0x6e, 0x64, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73,
+	0x4c, 0x6f, 0x67, 0x12, 0x1c, 0x2e, 0x70, 0x62, 0x2e, 0x46, 0x69, 0x6e, 0x64, 0x48, 0x54, 0x54,
+	0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x4c, 0x6f, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x1d, 0x2e, 0x70, 0x62, 0x2e, 0x46, 0x69, 0x6e, 0x64, 0x48, 0x54, 0x54, 0x50, 0x41,
+	0x63, 0x63, 0x65, 0x73, 0x73, 0x4c, 0x6f, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x59, 0x0a, 0x14, 0x73, 0x65, 0x61, 0x72, 0x63, 0x68, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63,
+	0x63, 0x65, 0x73, 0x73, 0x4c, 0x6f, 0x67, 0x73, 0x12, 0x1f, 0x2e, 0x70, 0x62, 0x2e, 0x53, 0x65,
+	0x61, 0x72, 0x63, 0x68, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x4c, 0x6f,
+	0x67, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x70, 0x62, 0x2e, 0x53,
+	0x65, 0x61, 0x72, 0x63, 0x68, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x4c,
+	0x6f, 0x67, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x62, 0x0a, 0x17, 0x73,
+	0x74, 0x61, 0x74, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63,
+	0x65, 0x73, 0x73, 0x54, 0x6f, 0x70, 0x12, 0x22, 0x2e, 0x70, 0x62, 0x2e, 0x53, 0x74, 0x61, 0x74,
+	0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73,
+	0x54, 0x6f, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e, 0x70, 0x62, 0x2e,
+	0x53, 0x74, 0x61, 0x74, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63,
+	0x63, 0x65, 0x73, 0x73, 0x54, 0x6f, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x59, 0x0a, 0x14, 0x73, 0x74, 0x61, 0x74, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x48, 0x54, 0x54,
+	0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x12, 0x1f, 0x2e, 0x70, 0x62, 0x2e, 0x53, 0x74, 0x61,
+	0x74, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73,
+	0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x70, 0x62, 0x2e, 0x53, 0x74,
+	0x61, 0x74, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65,
+	0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x65, 0x0a, 0x18, 0x73, 0x74,
+	0x61, 0x74, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65,
+	0x73, 0x73, 0x54, 0x79, 0x70, 0x65, 0x12, 0x23, 0x2e, 0x70, 0x62, 0x2e, 0x53, 0x74, 0x61, 0x74,
+	0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73,
+	0x54, 0x79, 0x70, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e, 0x70, 0x62,
+	0x2e, 0x53, 0x74, 0x61, 0x74, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x48, 0x54, 0x54, 0x50, 0x41,
+	0x63, 0x63, 0x65, 0x73, 0x73, 0x54, 0x79, 0x70, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -747,38 +1244,55 @@ func file_service_http_access_log_proto_rawDescGZIP() []byte {
 	return file_service_http_access_log_proto_rawDescData
 }
 
-var file_service_http_access_log_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_service_http_access_log_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_service_http_access_log_proto_goTypes = []interface{}{
-	(*CreateHTTPAccessLogsRequest)(nil),  // 0: pb.CreateHTTPAccessLogsRequest
-	(*CreateHTTPAccessLogsResponse)(nil), // 1: pb.CreateHTTPAccessLogsResponse
-	(*ListHTTPAccessLogsRequest)(nil),    // 2: pb.ListHTTPAccessLogsRequest
-	(*ListHTTPAccessLogsResponse)(nil),   // 3: pb.ListHTTPAccessLogsResponse
-	(*FindHTTPAccessLogRequest)(nil),     // 4: pb.FindHTTPAccessLogRequest
-	(*FindHTTPAccessLogResponse)(nil),    // 5: pb.FindHTTPAccessLogResponse
-	(*SearchHTTPAccessLogsRequest)(nil),  // 6: pb.SearchHTTPAccessLogsRequest
-	(*SearchHTTPAccessLogsResponse)(nil), // 7: pb.SearchHTTPAccessLogsResponse
-	(*HTTPAccessLog)(nil),                // 8: pb.HTTPAccessLog
+	(*CreateHTTPAccessLogsRequest)(nil),      // 0: pb.CreateHTTPAccessLogsRequest
+	(*CreateHTTPAccessLogsResponse)(nil),     // 1: pb.CreateHTTPAccessLogsResponse
+	(*ListHTTPAccessLogsRequest)(nil),        // 2: pb.ListHTTPAccessLogsRequest
+	(*ListHTTPAccessLogsResponse)(nil),       // 3: pb.ListHTTPAccessLogsResponse
+	(*FindHTTPAccessLogRequest)(nil),         // 4: pb.FindHTTPAccessLogRequest
+	(*FindHTTPAccessLogResponse)(nil),        // 5: pb.FindHTTPAccessLogResponse
+	(*SearchHTTPAccessLogsRequest)(nil),      // 6: pb.SearchHTTPAccessLogsRequest
+	(*SearchHTTPAccessLogsResponse)(nil),     // 7: pb.SearchHTTPAccessLogsResponse
+	(*StatisticsHTTPAccessTopRequest)(nil),   // 8: pb.StatisticsHTTPAccessTopRequest
+	(*StatisticsHTTPAccessTopResponse)(nil),  // 9: pb.StatisticsHTTPAccessTopResponse
+	(*AccessTop)(nil),                        // 10: pb.AccessTop
+	(*StatisticsHTTPAccessRequest)(nil),      // 11: pb.StatisticsHTTPAccessRequest
+	(*StatisticsHTTPAccessResponse)(nil),     // 12: pb.StatisticsHTTPAccessResponse
+	(*StatisticsHTTPAccessTypeRequest)(nil),  // 13: pb.StatisticsHTTPAccessTypeRequest
+	(*StatisticsHTTPAccessTypeResponse)(nil), // 14: pb.StatisticsHTTPAccessTypeResponse
+	(*HTTPAccessType)(nil),                   // 15: pb.HTTPAccessType
+	(*HTTPAccessLog)(nil),                    // 16: pb.HTTPAccessLog
 }
 var file_service_http_access_log_proto_depIdxs = []int32{
-	8,  // 0: pb.CreateHTTPAccessLogsRequest.httpAccessLogs:type_name -> pb.HTTPAccessLog
-	8,  // 1: pb.ListHTTPAccessLogsResponse.accessLogs:type_name -> pb.HTTPAccessLog
-	8,  // 2: pb.ListHTTPAccessLogsResponse.httpAccessLogs:type_name -> pb.HTTPAccessLog
-	8,  // 3: pb.FindHTTPAccessLogResponse.httpAccessLog:type_name -> pb.HTTPAccessLog
-	8,  // 4: pb.SearchHTTPAccessLogsResponse.accessLogs:type_name -> pb.HTTPAccessLog
-	8,  // 5: pb.SearchHTTPAccessLogsResponse.httpAccessLogs:type_name -> pb.HTTPAccessLog
-	0,  // 6: pb.HTTPAccessLogService.createHTTPAccessLogs:input_type -> pb.CreateHTTPAccessLogsRequest
-	2,  // 7: pb.HTTPAccessLogService.listHTTPAccessLogs:input_type -> pb.ListHTTPAccessLogsRequest
-	4,  // 8: pb.HTTPAccessLogService.findHTTPAccessLog:input_type -> pb.FindHTTPAccessLogRequest
-	6,  // 9: pb.HTTPAccessLogService.searchHTTPAccessLogs:input_type -> pb.SearchHTTPAccessLogsRequest
-	1,  // 10: pb.HTTPAccessLogService.createHTTPAccessLogs:output_type -> pb.CreateHTTPAccessLogsResponse
-	3,  // 11: pb.HTTPAccessLogService.listHTTPAccessLogs:output_type -> pb.ListHTTPAccessLogsResponse
-	5,  // 12: pb.HTTPAccessLogService.findHTTPAccessLog:output_type -> pb.FindHTTPAccessLogResponse
-	7,  // 13: pb.HTTPAccessLogService.searchHTTPAccessLogs:output_type -> pb.SearchHTTPAccessLogsResponse
-	10, // [10:14] is the sub-list for method output_type
-	6,  // [6:10] is the sub-list for method input_type
-	6,  // [6:6] is the sub-list for extension type_name
-	6,  // [6:6] is the sub-list for extension extendee
-	0,  // [0:6] is the sub-list for field type_name
+	16, // 0: pb.CreateHTTPAccessLogsRequest.httpAccessLogs:type_name -> pb.HTTPAccessLog
+	16, // 1: pb.ListHTTPAccessLogsResponse.accessLogs:type_name -> pb.HTTPAccessLog
+	16, // 2: pb.ListHTTPAccessLogsResponse.httpAccessLogs:type_name -> pb.HTTPAccessLog
+	16, // 3: pb.FindHTTPAccessLogResponse.httpAccessLog:type_name -> pb.HTTPAccessLog
+	16, // 4: pb.SearchHTTPAccessLogsResponse.accessLogs:type_name -> pb.HTTPAccessLog
+	16, // 5: pb.SearchHTTPAccessLogsResponse.httpAccessLogs:type_name -> pb.HTTPAccessLog
+	10, // 6: pb.StatisticsHTTPAccessTopResponse.ip:type_name -> pb.AccessTop
+	10, // 7: pb.StatisticsHTTPAccessTopResponse.region:type_name -> pb.AccessTop
+	15, // 8: pb.StatisticsHTTPAccessTypeResponse.attacks:type_name -> pb.HTTPAccessType
+	0,  // 9: pb.HTTPAccessLogService.createHTTPAccessLogs:input_type -> pb.CreateHTTPAccessLogsRequest
+	2,  // 10: pb.HTTPAccessLogService.listHTTPAccessLogs:input_type -> pb.ListHTTPAccessLogsRequest
+	4,  // 11: pb.HTTPAccessLogService.findHTTPAccessLog:input_type -> pb.FindHTTPAccessLogRequest
+	6,  // 12: pb.HTTPAccessLogService.searchHTTPAccessLogs:input_type -> pb.SearchHTTPAccessLogsRequest
+	8,  // 13: pb.HTTPAccessLogService.statisticsHTTPAccessTop:input_type -> pb.StatisticsHTTPAccessTopRequest
+	11, // 14: pb.HTTPAccessLogService.statisticsHTTPAccess:input_type -> pb.StatisticsHTTPAccessRequest
+	13, // 15: pb.HTTPAccessLogService.statisticsHTTPAccessType:input_type -> pb.StatisticsHTTPAccessTypeRequest
+	1,  // 16: pb.HTTPAccessLogService.createHTTPAccessLogs:output_type -> pb.CreateHTTPAccessLogsResponse
+	3,  // 17: pb.HTTPAccessLogService.listHTTPAccessLogs:output_type -> pb.ListHTTPAccessLogsResponse
+	5,  // 18: pb.HTTPAccessLogService.findHTTPAccessLog:output_type -> pb.FindHTTPAccessLogResponse
+	7,  // 19: pb.HTTPAccessLogService.searchHTTPAccessLogs:output_type -> pb.SearchHTTPAccessLogsResponse
+	9,  // 20: pb.HTTPAccessLogService.statisticsHTTPAccessTop:output_type -> pb.StatisticsHTTPAccessTopResponse
+	12, // 21: pb.HTTPAccessLogService.statisticsHTTPAccess:output_type -> pb.StatisticsHTTPAccessResponse
+	14, // 22: pb.HTTPAccessLogService.statisticsHTTPAccessType:output_type -> pb.StatisticsHTTPAccessTypeResponse
+	16, // [16:23] is the sub-list for method output_type
+	9,  // [9:16] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_service_http_access_log_proto_init() }
@@ -884,6 +1398,102 @@ func file_service_http_access_log_proto_init() {
 				return nil
 			}
 		}
+		file_service_http_access_log_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StatisticsHTTPAccessTopRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_service_http_access_log_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StatisticsHTTPAccessTopResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_service_http_access_log_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AccessTop); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_service_http_access_log_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StatisticsHTTPAccessRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_service_http_access_log_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StatisticsHTTPAccessResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_service_http_access_log_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StatisticsHTTPAccessTypeRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_service_http_access_log_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StatisticsHTTPAccessTypeResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_service_http_access_log_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*HTTPAccessType); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -891,7 +1501,7 @@ func file_service_http_access_log_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_service_http_access_log_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
@@ -925,6 +1535,12 @@ type HTTPAccessLogServiceClient interface {
 	FindHTTPAccessLog(ctx context.Context, in *FindHTTPAccessLogRequest, opts ...grpc.CallOption) (*FindHTTPAccessLogResponse, error)
 	// 列出单页访问日志 新增 时间条件
 	SearchHTTPAccessLogs(ctx context.Context, in *SearchHTTPAccessLogsRequest, opts ...grpc.CallOption) (*SearchHTTPAccessLogsResponse, error)
+	// 统计用户相关域名的攻击排行（ip/区域）
+	StatisticsHTTPAccessTop(ctx context.Context, in *StatisticsHTTPAccessTopRequest, opts ...grpc.CallOption) (*StatisticsHTTPAccessTopResponse, error)
+	// 统计指定日期用户相关域名对应的攻击次数
+	StatisticsHTTPAccess(ctx context.Context, in *StatisticsHTTPAccessRequest, opts ...grpc.CallOption) (*StatisticsHTTPAccessResponse, error)
+	// 统计指定日期用户相关域名对应的攻击类型次数
+	StatisticsHTTPAccessType(ctx context.Context, in *StatisticsHTTPAccessTypeRequest, opts ...grpc.CallOption) (*StatisticsHTTPAccessTypeResponse, error)
 }
 
 type hTTPAccessLogServiceClient struct {
@@ -971,6 +1587,33 @@ func (c *hTTPAccessLogServiceClient) SearchHTTPAccessLogs(ctx context.Context, i
 	return out, nil
 }
 
+func (c *hTTPAccessLogServiceClient) StatisticsHTTPAccessTop(ctx context.Context, in *StatisticsHTTPAccessTopRequest, opts ...grpc.CallOption) (*StatisticsHTTPAccessTopResponse, error) {
+	out := new(StatisticsHTTPAccessTopResponse)
+	err := c.cc.Invoke(ctx, "/pb.HTTPAccessLogService/statisticsHTTPAccessTop", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *hTTPAccessLogServiceClient) StatisticsHTTPAccess(ctx context.Context, in *StatisticsHTTPAccessRequest, opts ...grpc.CallOption) (*StatisticsHTTPAccessResponse, error) {
+	out := new(StatisticsHTTPAccessResponse)
+	err := c.cc.Invoke(ctx, "/pb.HTTPAccessLogService/statisticsHTTPAccess", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *hTTPAccessLogServiceClient) StatisticsHTTPAccessType(ctx context.Context, in *StatisticsHTTPAccessTypeRequest, opts ...grpc.CallOption) (*StatisticsHTTPAccessTypeResponse, error) {
+	out := new(StatisticsHTTPAccessTypeResponse)
+	err := c.cc.Invoke(ctx, "/pb.HTTPAccessLogService/statisticsHTTPAccessType", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // HTTPAccessLogServiceServer is the server API for HTTPAccessLogService service.
 type HTTPAccessLogServiceServer interface {
 	// 创建访问日志
@@ -981,6 +1624,12 @@ type HTTPAccessLogServiceServer interface {
 	FindHTTPAccessLog(context.Context, *FindHTTPAccessLogRequest) (*FindHTTPAccessLogResponse, error)
 	// 列出单页访问日志 新增 时间条件
 	SearchHTTPAccessLogs(context.Context, *SearchHTTPAccessLogsRequest) (*SearchHTTPAccessLogsResponse, error)
+	// 统计用户相关域名的攻击排行（ip/区域）
+	StatisticsHTTPAccessTop(context.Context, *StatisticsHTTPAccessTopRequest) (*StatisticsHTTPAccessTopResponse, error)
+	// 统计指定日期用户相关域名对应的攻击次数
+	StatisticsHTTPAccess(context.Context, *StatisticsHTTPAccessRequest) (*StatisticsHTTPAccessResponse, error)
+	// 统计指定日期用户相关域名对应的攻击类型次数
+	StatisticsHTTPAccessType(context.Context, *StatisticsHTTPAccessTypeRequest) (*StatisticsHTTPAccessTypeResponse, error)
 }
 
 // UnimplementedHTTPAccessLogServiceServer can be embedded to have forward compatible implementations.
@@ -998,6 +1647,15 @@ func (*UnimplementedHTTPAccessLogServiceServer) FindHTTPAccessLog(context.Contex
 }
 func (*UnimplementedHTTPAccessLogServiceServer) SearchHTTPAccessLogs(context.Context, *SearchHTTPAccessLogsRequest) (*SearchHTTPAccessLogsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchHTTPAccessLogs not implemented")
+}
+func (*UnimplementedHTTPAccessLogServiceServer) StatisticsHTTPAccessTop(context.Context, *StatisticsHTTPAccessTopRequest) (*StatisticsHTTPAccessTopResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StatisticsHTTPAccessTop not implemented")
+}
+func (*UnimplementedHTTPAccessLogServiceServer) StatisticsHTTPAccess(context.Context, *StatisticsHTTPAccessRequest) (*StatisticsHTTPAccessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StatisticsHTTPAccess not implemented")
+}
+func (*UnimplementedHTTPAccessLogServiceServer) StatisticsHTTPAccessType(context.Context, *StatisticsHTTPAccessTypeRequest) (*StatisticsHTTPAccessTypeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StatisticsHTTPAccessType not implemented")
 }
 
 func RegisterHTTPAccessLogServiceServer(s *grpc.Server, srv HTTPAccessLogServiceServer) {
@@ -1076,6 +1734,60 @@ func _HTTPAccessLogService_SearchHTTPAccessLogs_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _HTTPAccessLogService_StatisticsHTTPAccessTop_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StatisticsHTTPAccessTopRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HTTPAccessLogServiceServer).StatisticsHTTPAccessTop(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.HTTPAccessLogService/StatisticsHTTPAccessTop",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HTTPAccessLogServiceServer).StatisticsHTTPAccessTop(ctx, req.(*StatisticsHTTPAccessTopRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _HTTPAccessLogService_StatisticsHTTPAccess_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StatisticsHTTPAccessRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HTTPAccessLogServiceServer).StatisticsHTTPAccess(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.HTTPAccessLogService/StatisticsHTTPAccess",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HTTPAccessLogServiceServer).StatisticsHTTPAccess(ctx, req.(*StatisticsHTTPAccessRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _HTTPAccessLogService_StatisticsHTTPAccessType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StatisticsHTTPAccessTypeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HTTPAccessLogServiceServer).StatisticsHTTPAccessType(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.HTTPAccessLogService/StatisticsHTTPAccessType",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HTTPAccessLogServiceServer).StatisticsHTTPAccessType(ctx, req.(*StatisticsHTTPAccessTypeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _HTTPAccessLogService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "pb.HTTPAccessLogService",
 	HandlerType: (*HTTPAccessLogServiceServer)(nil),
@@ -1095,6 +1807,18 @@ var _HTTPAccessLogService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "searchHTTPAccessLogs",
 			Handler:    _HTTPAccessLogService_SearchHTTPAccessLogs_Handler,
+		},
+		{
+			MethodName: "statisticsHTTPAccessTop",
+			Handler:    _HTTPAccessLogService_StatisticsHTTPAccessTop_Handler,
+		},
+		{
+			MethodName: "statisticsHTTPAccess",
+			Handler:    _HTTPAccessLogService_StatisticsHTTPAccess_Handler,
+		},
+		{
+			MethodName: "statisticsHTTPAccessType",
+			Handler:    _HTTPAccessLogService_StatisticsHTTPAccessType_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
