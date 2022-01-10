@@ -100,6 +100,7 @@ message StatisticsHTTPAccessTopRequest {
 message StatisticsHTTPAccessTopResponse {
     AccessTop ip = 1;   //ip排名
     AccessTop region = 2;   //区域排名
+    int64  total = 3;   //总数
 }
 message AccessTop {
     repeated string names = 1;    //值
