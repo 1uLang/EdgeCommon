@@ -86,7 +86,7 @@ message SearchHTTPAccessLogsRequest {
     uint64 endAt = 9;    //结束时间
     string code = 10;   //攻击类型code
     bool hasAll = 11;   //所有访问日志
-    bool basError = 12;//错误日志
+    bool hasError = 12;//错误日志
     string requestMethod = 13;  //请求方式
 }
 
