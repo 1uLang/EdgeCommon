@@ -28,7 +28,12 @@ service HTTPAccessLogService {
 
     // 统计指定日期用户相关域名对应的攻击类型次数
     rpc statisticsHTTPAccessType (StatisticsHTTPAccessTypeRequest) returns (StatisticsHTTPAccessTypeResponse);
-
+    // 统计统计指定用户日期下 各访问的 访问条数 访问总次数  防护总次数 访问IP总数 拦截IP总数
+    rpc StatisticsHTTPAccessLogs( StatisticsHTTPAccessTypeRequest)returns(StatisticsHTTPAccessLogResponse);
+    // 统计最受攻击的域名排行
+    rpc  StatisticsAttackURLTop(StatisticsHTTPAccessTopRequest)returns(StatisticsHTTPAttackURLTopResponse);
+    // 统计客户端访问IP排行
+    rpc  StatisticsAccessIPTop(StatisticsHTTPAccessTopRequest)returns(StatisticsHTTPAccessIPTopResponse);
 }
 
 // 创建访问日志
@@ -102,9 +107,14 @@ message StatisticsHTTPAccessTopRequest {
     int32 top = 3;    //排行前几
 }
 message StatisticsHTTPAccessTopResponse {
+    repeated StatisticsHTTPAccess stats = 1;  //攻击
+}
+
+message StatisticsHTTPAccess {
     AccessTop ip = 1;   //ip排名
     AccessTop region = 2;   //区域排名
     int64  total = 3;   //总数
+    int64 serverId=4; // 服务ID
 }
 message AccessTop {
     repeated string names = 1;    //值
@@ -125,7 +135,34 @@ message StatisticsHTTPAccessTypeResponse {
     repeated HTTPAccessType attacks = 1;  //攻击
 }
 message HTTPAccessType {
-    string code = 1; //攻击类型分组code
-    string name = 2; //攻击类型名称
-    int64  count = 3;//攻击次数
+    string serverId = 1; // 服务ID
+    string code = 2; //攻击类型分组code
+    string name = 3; //攻击类型名称
+    int64  count = 4;//攻击次数
+}
+message StatisticsHTTPAccessLogResponse {
+    repeated HTTPAccessStat attacks = 1;  //攻击
+}
+message HTTPAccessStat {
+    int64 serverId = 1; // 服务ID
+    int64 accessTotal = 2; //访问总数
+    int64 attackTotal = 3; //防护总数
+    int64  accessIpTotal = 4;//访问IP数
+    int64  attackIpTotal = 5;//拦截IP数
+}
+message StatisticsHTTPAttackURLTopResponse {
+    repeated HTTPAttackURL attacks = 1;  //攻击
+}
+message HTTPAttackURL {
+    int64 serverId = 1; // 服务ID
+    repeated string url = 2; //攻击域名
+    repeated  int64  count = 3;//攻击次数
+}
+message StatisticsHTTPAccessIPTopResponse {
+    repeated HTTPAccessIP access = 1;  //访问
+}
+message HTTPAccessIP {
+    int64 serverId = 1; // 服务ID
+    repeated string ip = 2; //访问域名
+    repeated int64  count = 3;//攻击次数
 }
