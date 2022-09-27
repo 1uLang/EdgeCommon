@@ -155,8 +155,12 @@ message StatisticsHTTPAttackURLTopResponse {
 }
 message HTTPAttackURL {
     int64 serverId = 1; // 服务ID
-    repeated string url = 2; //攻击域名
-    repeated  int64  count = 3;//攻击次数
+    attackCount hosts = 2; //攻击域名 - 次数
+    attackCount  uris = 3;//攻击uri - 次数
+}
+message attackCount {
+    repeated  string values = 1;
+    repeated int64 counts = 2;
 }
 message StatisticsHTTPAccessIPTopResponse {
     repeated HTTPAccessIP access = 1;  //访问
