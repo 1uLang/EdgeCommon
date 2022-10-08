@@ -170,3 +170,12 @@ message HTTPAccessIP {
     repeated string ip = 2; //访问域名
     repeated int64  count = 3;//攻击次数
 }
+
+message StatisticsStatusCodeTopResponse {
+    repeated StatusCode codes = 1;  //访问
+}
+message StatusCode {
+    int64 serverId = 1; // 服务ID
+    repeated uint32 code = 2; //状态码
+    repeated int64  count = 3;//次数
+}
