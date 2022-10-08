@@ -1870,7 +1870,7 @@ var file_service_http_access_log_proto_rawDesc = []byte{
 	0x08, 0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x49, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64,
 	0x65, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0d, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x14, 0x0a,
 	0x05, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x03, 0x28, 0x03, 0x52, 0x05, 0x63, 0x6f,
-	0x75, 0x6e, 0x74, 0x32, 0xc9, 0x07, 0x0a, 0x14, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65,
+	0x75, 0x6e, 0x74, 0x32, 0xaa, 0x08, 0x0a, 0x14, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65,
 	0x73, 0x73, 0x4c, 0x6f, 0x67, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x59, 0x0a, 0x14,
 	0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73,
 	0x4c, 0x6f, 0x67, 0x73, 0x12, 0x1f, 0x2e, 0x70, 0x62, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
@@ -1930,8 +1930,14 @@ var file_service_http_access_log_proto_rawDesc = []byte{
 	0x74, 0x69, 0x63, 0x73, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73, 0x73, 0x54, 0x6f,
 	0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x25, 0x2e, 0x70, 0x62, 0x2e, 0x53, 0x74,
 	0x61, 0x74, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65,
-	0x73, 0x73, 0x49, 0x50, 0x54, 0x6f, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42,
-	0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x73, 0x73, 0x49, 0x50, 0x54, 0x6f, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x5f, 0x0a, 0x14, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x43, 0x6f, 0x64, 0x65, 0x53, 0x74, 0x61,
+	0x74, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x12, 0x22, 0x2e, 0x70, 0x62, 0x2e, 0x53, 0x74, 0x61,
+	0x74, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x48, 0x54, 0x54, 0x50, 0x41, 0x63, 0x63, 0x65, 0x73,
+	0x73, 0x54, 0x6f, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e, 0x70, 0x62,
+	0x2e, 0x53, 0x74, 0x61, 0x74, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x53, 0x74, 0x61, 0x74, 0x75,
+	0x73, 0x43, 0x6f, 0x64, 0x65, 0x54, 0x6f, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2003,18 +2009,20 @@ var file_service_http_access_log_proto_depIdxs = []int32{
 	14, // 23: pb.HTTPAccessLogService.StatisticsHTTPAccessLogs:input_type -> pb.StatisticsHTTPAccessTypeRequest
 	8,  // 24: pb.HTTPAccessLogService.StatisticsAttackURLTop:input_type -> pb.StatisticsHTTPAccessTopRequest
 	8,  // 25: pb.HTTPAccessLogService.StatisticsAccessIPTop:input_type -> pb.StatisticsHTTPAccessTopRequest
-	1,  // 26: pb.HTTPAccessLogService.createHTTPAccessLogs:output_type -> pb.CreateHTTPAccessLogsResponse
-	3,  // 27: pb.HTTPAccessLogService.listHTTPAccessLogs:output_type -> pb.ListHTTPAccessLogsResponse
-	5,  // 28: pb.HTTPAccessLogService.findHTTPAccessLog:output_type -> pb.FindHTTPAccessLogResponse
-	7,  // 29: pb.HTTPAccessLogService.searchHTTPAccessLogs:output_type -> pb.SearchHTTPAccessLogsResponse
-	9,  // 30: pb.HTTPAccessLogService.statisticsHTTPAccessTop:output_type -> pb.StatisticsHTTPAccessTopResponse
-	13, // 31: pb.HTTPAccessLogService.statisticsHTTPAccess:output_type -> pb.StatisticsHTTPAccessResponse
-	15, // 32: pb.HTTPAccessLogService.statisticsHTTPAccessType:output_type -> pb.StatisticsHTTPAccessTypeResponse
-	17, // 33: pb.HTTPAccessLogService.StatisticsHTTPAccessLogs:output_type -> pb.StatisticsHTTPAccessLogResponse
-	19, // 34: pb.HTTPAccessLogService.StatisticsAttackURLTop:output_type -> pb.StatisticsHTTPAttackURLTopResponse
-	22, // 35: pb.HTTPAccessLogService.StatisticsAccessIPTop:output_type -> pb.StatisticsHTTPAccessIPTopResponse
-	26, // [26:36] is the sub-list for method output_type
-	16, // [16:26] is the sub-list for method input_type
+	8,  // 26: pb.HTTPAccessLogService.StatusCodeStatistics:input_type -> pb.StatisticsHTTPAccessTopRequest
+	1,  // 27: pb.HTTPAccessLogService.createHTTPAccessLogs:output_type -> pb.CreateHTTPAccessLogsResponse
+	3,  // 28: pb.HTTPAccessLogService.listHTTPAccessLogs:output_type -> pb.ListHTTPAccessLogsResponse
+	5,  // 29: pb.HTTPAccessLogService.findHTTPAccessLog:output_type -> pb.FindHTTPAccessLogResponse
+	7,  // 30: pb.HTTPAccessLogService.searchHTTPAccessLogs:output_type -> pb.SearchHTTPAccessLogsResponse
+	9,  // 31: pb.HTTPAccessLogService.statisticsHTTPAccessTop:output_type -> pb.StatisticsHTTPAccessTopResponse
+	13, // 32: pb.HTTPAccessLogService.statisticsHTTPAccess:output_type -> pb.StatisticsHTTPAccessResponse
+	15, // 33: pb.HTTPAccessLogService.statisticsHTTPAccessType:output_type -> pb.StatisticsHTTPAccessTypeResponse
+	17, // 34: pb.HTTPAccessLogService.StatisticsHTTPAccessLogs:output_type -> pb.StatisticsHTTPAccessLogResponse
+	19, // 35: pb.HTTPAccessLogService.StatisticsAttackURLTop:output_type -> pb.StatisticsHTTPAttackURLTopResponse
+	22, // 36: pb.HTTPAccessLogService.StatisticsAccessIPTop:output_type -> pb.StatisticsHTTPAccessIPTopResponse
+	24, // 37: pb.HTTPAccessLogService.StatusCodeStatistics:output_type -> pb.StatisticsStatusCodeTopResponse
+	27, // [27:38] is the sub-list for method output_type
+	16, // [16:27] is the sub-list for method input_type
 	16, // [16:16] is the sub-list for extension type_name
 	16, // [16:16] is the sub-list for extension extendee
 	0,  // [0:16] is the sub-list for field type_name
@@ -2392,6 +2400,8 @@ type HTTPAccessLogServiceClient interface {
 	StatisticsAttackURLTop(ctx context.Context, in *StatisticsHTTPAccessTopRequest, opts ...grpc.CallOption) (*StatisticsHTTPAttackURLTopResponse, error)
 	// 统计客户端访问IP排行
 	StatisticsAccessIPTop(ctx context.Context, in *StatisticsHTTPAccessTopRequest, opts ...grpc.CallOption) (*StatisticsHTTPAccessIPTopResponse, error)
+	// 统计客户端访问IP排行
+	StatusCodeStatistics(ctx context.Context, in *StatisticsHTTPAccessTopRequest, opts ...grpc.CallOption) (*StatisticsStatusCodeTopResponse, error)
 }
 
 type hTTPAccessLogServiceClient struct {
@@ -2492,6 +2502,15 @@ func (c *hTTPAccessLogServiceClient) StatisticsAccessIPTop(ctx context.Context, 
 	return out, nil
 }
 
+func (c *hTTPAccessLogServiceClient) StatusCodeStatistics(ctx context.Context, in *StatisticsHTTPAccessTopRequest, opts ...grpc.CallOption) (*StatisticsStatusCodeTopResponse, error) {
+	out := new(StatisticsStatusCodeTopResponse)
+	err := c.cc.Invoke(ctx, "/pb.HTTPAccessLogService/StatusCodeStatistics", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // HTTPAccessLogServiceServer is the server API for HTTPAccessLogService service.
 type HTTPAccessLogServiceServer interface {
 	// 创建访问日志
@@ -2514,6 +2533,8 @@ type HTTPAccessLogServiceServer interface {
 	StatisticsAttackURLTop(context.Context, *StatisticsHTTPAccessTopRequest) (*StatisticsHTTPAttackURLTopResponse, error)
 	// 统计客户端访问IP排行
 	StatisticsAccessIPTop(context.Context, *StatisticsHTTPAccessTopRequest) (*StatisticsHTTPAccessIPTopResponse, error)
+	// 统计客户端访问IP排行
+	StatusCodeStatistics(context.Context, *StatisticsHTTPAccessTopRequest) (*StatisticsStatusCodeTopResponse, error)
 }
 
 // UnimplementedHTTPAccessLogServiceServer can be embedded to have forward compatible implementations.
@@ -2549,6 +2570,9 @@ func (*UnimplementedHTTPAccessLogServiceServer) StatisticsAttackURLTop(context.C
 }
 func (*UnimplementedHTTPAccessLogServiceServer) StatisticsAccessIPTop(context.Context, *StatisticsHTTPAccessTopRequest) (*StatisticsHTTPAccessIPTopResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StatisticsAccessIPTop not implemented")
+}
+func (*UnimplementedHTTPAccessLogServiceServer) StatusCodeStatistics(context.Context, *StatisticsHTTPAccessTopRequest) (*StatisticsStatusCodeTopResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StatusCodeStatistics not implemented")
 }
 
 func RegisterHTTPAccessLogServiceServer(s *grpc.Server, srv HTTPAccessLogServiceServer) {
@@ -2735,6 +2759,24 @@ func _HTTPAccessLogService_StatisticsAccessIPTop_Handler(srv interface{}, ctx co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _HTTPAccessLogService_StatusCodeStatistics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StatisticsHTTPAccessTopRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HTTPAccessLogServiceServer).StatusCodeStatistics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.HTTPAccessLogService/StatusCodeStatistics",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HTTPAccessLogServiceServer).StatusCodeStatistics(ctx, req.(*StatisticsHTTPAccessTopRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _HTTPAccessLogService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "pb.HTTPAccessLogService",
 	HandlerType: (*HTTPAccessLogServiceServer)(nil),
@@ -2778,6 +2820,10 @@ var _HTTPAccessLogService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StatisticsAccessIPTop",
 			Handler:    _HTTPAccessLogService_StatisticsAccessIPTop_Handler,
+		},
+		{
+			MethodName: "StatusCodeStatistics",
+			Handler:    _HTTPAccessLogService_StatusCodeStatistics_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

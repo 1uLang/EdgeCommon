@@ -34,6 +34,8 @@ service HTTPAccessLogService {
     rpc  StatisticsAttackURLTop(StatisticsHTTPAccessTopRequest)returns(StatisticsHTTPAttackURLTopResponse);
     // 统计客户端访问IP排行
     rpc  StatisticsAccessIPTop(StatisticsHTTPAccessTopRequest)returns(StatisticsHTTPAccessIPTopResponse);
+    // 统计客户端访问IP排行
+    rpc  StatusCodeStatistics(StatisticsHTTPAccessTopRequest)returns(StatisticsStatusCodeTopResponse);
 }
 
 // 创建访问日志
