@@ -95,6 +95,7 @@ message SearchHTTPAccessLogsRequest {
     bool hasAll = 11;   //所有访问日志
     bool hasError = 12;//错误日志
     string requestMethod = 13;  //请求方式
+    string keyword = 14; // 关键词
 }
 
 message SearchHTTPAccessLogsResponse {
