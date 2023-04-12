@@ -20,16 +20,20 @@ type NodeStatus struct {
 	DiskMaxUsagePartition string  `json:"diskMaxUsagePartition"`
 	DiskTotal             uint64  `json:"diskTotal"`
 	UpdatedAt             int64   `json:"updatedAt"`
+	Timestamp             int64   `json:"timestamp"` // 当前节点时间戳
 	Load1m                float64 `json:"load1m"`
 	Load5m                float64 `json:"load5m"`
 	Load15m               float64 `json:"load15m"`
 	ConnectionCount       int     `json:"connectionCount"` // 连接数
+	ExePath               string  `json:"exePath"`         // 可执行文件路径
 
 	TrafficInBytes  uint64 `json:"trafficInBytes"`
 	TrafficOutBytes uint64 `json:"trafficOutBytes"`
 
 	CacheTotalDiskSize   int64 `json:"cacheTotalDiskSize"`
 	CacheTotalMemorySize int64 `json:"cacheTotalMemorySize"`
+
+	LocalFirewallName string `json:"localFirewallName"`
 
 	IsActive bool   `json:"isActive"`
 	Error    string `json:"error"`

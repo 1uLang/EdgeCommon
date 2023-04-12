@@ -6,17 +6,24 @@ import (
 	"github.com/1uLang/EdgeCommon/pkg/configutils"
 	"github.com/1uLang/EdgeCommon/pkg/serverconfigs/firewallconfigs"
 	"github.com/1uLang/EdgeCommon/pkg/serverconfigs/sslconfigs"
+	"golang.org/x/net/idna"
+	"regexp"
 )
+
+var normalServerNameReg = regexp.MustCompile(`^[a-zA-Z0-9.-]+$`)
 
 type ServerConfig struct {
 	Id               int64               `yaml:"id" json:"id"`                             // ID
 	ClusterId        int64               `yaml:"clusterId" json:"clusterId"`               // 集群ID
+	UserId           int64               `yaml:"userId" json:"userId"`                     // 用户ID
 	Type             string              `yaml:"type" json:"type"`                         // 类型
 	IsOn             bool                `yaml:"isOn" json:"isOn"`                         // 是否开启
 	Name             string              `yaml:"name" json:"name"`                         // 名称
 	Description      string              `yaml:"description" json:"description"`           // 描述
 	AliasServerNames []string            `yaml:"aliasServerNames" json:"aliasServerNames"` // 关联的域名，比如CNAME之类的
 	ServerNames      []*ServerNameConfig `yaml:"serverNames" json:"serverNames"`           // 域名
+	CNameDomain      string              `yaml:"cnameDomain" json:"cnameDomain"`           // CNAME（末尾不带点（.））
+	CNameAsDomain    bool                `yaml:"cnameAsDomain" json:"cnameAsDomain"`       // 启用CNAME域名访问
 	SupportCNAME     bool                `yaml:"supportCNAME" json:"supportCNAME"`         // 是否支持CNAME
 
 	// 前端协议
@@ -52,6 +59,11 @@ type ServerConfig struct {
 	// 分组
 	Group *ServerGroupConfig `yaml:"group" json:"group"`
 
+	// UAM
+	UAM *UAMConfig `yaml:"uam" json:"uam"`
+
+	isInitialized bool
+
 	isOk bool
 
 	planId int64
@@ -68,7 +80,12 @@ func NewServerConfig() *ServerConfig {
 	return &ServerConfig{}
 }
 
-func (this *ServerConfig) Init() error {
+func (this *ServerConfig) Init() (results []error) {
+	if this.isInitialized {
+		return
+	}
+	this.isInitialized = true
+
 	// 分解Group
 	if this.Group != nil && this.Group.IsOn {
 		// reverse proxy
@@ -159,6 +176,11 @@ func (this *ServerConfig) Init() error {
 					this.Web.Pages = groupWeb.Pages
 					this.Web.Shutdown = groupWeb.Shutdown
 				}
+
+				// request limit
+				if groupWeb.RequestLimit != nil && groupWeb.RequestLimit.IsPrior {
+					this.Web.RequestLimit = groupWeb.RequestLimit
+				}
 			}
 		}
 	}
@@ -166,63 +188,63 @@ func (this *ServerConfig) Init() error {
 	if this.HTTP != nil {
 		err := this.HTTP.Init()
 		if err != nil {
-			return err
+			results = append(results, err)
 		}
 	}
 
 	if this.HTTPS != nil {
 		err := this.HTTPS.Init()
 		if err != nil {
-			return err
+			results = append(results, err)
 		}
 	}
 
 	if this.TCP != nil {
 		err := this.TCP.Init()
 		if err != nil {
-			return err
+			results = append(results, err)
 		}
 	}
 
 	if this.TLS != nil {
 		err := this.TLS.Init()
 		if err != nil {
-			return err
+			results = append(results, err)
 		}
 	}
 
 	if this.Unix != nil {
 		err := this.Unix.Init()
 		if err != nil {
-			return err
+			results = append(results, err)
 		}
 	}
 
 	if this.UDP != nil {
 		err := this.UDP.Init()
 		if err != nil {
-			return err
+			results = append(results, err)
 		}
 	}
 
 	if this.ReverseProxyRef != nil {
 		err := this.ReverseProxyRef.Init()
 		if err != nil {
-			return err
+			results = append(results, err)
 		}
 	}
 
 	if this.ReverseProxy != nil {
 		err := this.ReverseProxy.Init()
 		if err != nil {
-			return err
+			results = append(results, err)
 		}
 	}
 
 	if this.Web != nil {
 		err := this.Web.Init()
 		if err != nil {
-			return err
+			results = append(results, err)
 		}
 	}
 
@@ -230,7 +252,7 @@ func (this *ServerConfig) Init() error {
 	if this.UserPlan != nil {
 		err := this.UserPlan.Init()
 		if err != nil {
-			return err
+			results = append(results, err)
 		}
 
 		if this.UserPlan.Plan != nil {
@@ -238,9 +260,21 @@ func (this *ServerConfig) Init() error {
 		}
 	}
 
+	// UAM
+	if this.UAM != nil {
+		err := this.UAM.Init()
+		if err != nil {
+			results = append(results, err)
+		}
+	}
+
 	this.isOk = true
 
 	return nil
+}
+
+func (this *ServerConfig) IsInitialized() bool {
+	return this.isInitialized
 }
 
 // IsOk 配置是否正确
@@ -322,6 +356,14 @@ func (this *ServerConfig) AllStrictNames() []string {
 		if len(name) > 0 {
 			if !configutils.IsFuzzyDomain(name) {
 				result = append(result, name)
+
+				// unicode domain
+				if !normalServerNameReg.MatchString(name) {
+					asciiName, err := idna.ToASCII(name)
+					if err == nil && len(asciiName) > 0 {
+						result = append(result, asciiName)
+					}
+				}
 			}
 		}
 	}
@@ -330,12 +372,28 @@ func (this *ServerConfig) AllStrictNames() []string {
 		if len(name) > 0 {
 			if !configutils.IsFuzzyDomain(name) {
 				result = append(result, name)
+
+				// unicode domain
+				if !normalServerNameReg.MatchString(name) {
+					asciiName, err := idna.ToASCII(name)
+					if err == nil && len(asciiName) > 0 {
+						result = append(result, asciiName)
+					}
+				}
 			}
 		}
 		for _, name := range serverName.SubNames {
 			if len(name) > 0 {
 				if !configutils.IsFuzzyDomain(name) {
 					result = append(result, name)
+
+					// unicode domain
+					if !normalServerNameReg.MatchString(name) {
+						asciiName, err := idna.ToASCII(name)
+						if err == nil && len(asciiName) > 0 {
+							result = append(result, asciiName)
+						}
+					}
 				}
 			}
 		}

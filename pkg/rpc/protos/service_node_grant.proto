@@ -5,6 +5,7 @@ package pb;
 import "models/model_node_grant.proto";
 import "models/rpc_messages.proto";
 
+// 节点认证信息管理服务
 service NodeGrantService {
 	// 创建认证
 	rpc createNodeGrant (CreateNodeGrantRequest) returns (CreateNodeGrantResponse);
@@ -44,6 +45,7 @@ message CreateNodeGrantRequest {
 	string passphrase = 8;
 	string description = 6;
 	int64 nodeId = 7;
+	bool su = 9;
 }
 
 message CreateNodeGrantResponse {
@@ -61,6 +63,7 @@ message UpdateNodeGrantRequest {
 	string passphrase = 9;
 	string description = 6;
 	int64 nodeId = 7;
+	bool su = 10;
 }
 
 // 禁用节点认证

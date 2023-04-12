@@ -6,6 +6,7 @@ package pb;
 import "models/model_reverse_proxy.proto";
 import "models/rpc_messages.proto";
 
+// 反向代理管理服务
 service ReverseProxyService {
 	// 创建反向代理
 	rpc createReverseProxy (CreateReverseProxyRequest) returns (CreateReverseProxyResponse);
@@ -81,6 +82,7 @@ message UpdateReverseProxyRequest {
 	int64 reverseProxyId = 1;
 	int32 requestHostType = 6;
 	string requestHost = 2;
+	bool requestHostExcludingPort = 15;
 	string requestURI = 3;
 	string stripPrefix = 4;
 	bool autoFlush = 5;
@@ -91,4 +93,5 @@ message UpdateReverseProxyRequest {
 	int32 maxConns = 11;
 	int32 maxIdleConns = 12;
 	bytes proxyProtocolJSON = 13;
+	bool followRedirects = 14;
 }

@@ -4,14 +4,18 @@ import "encoding/json"
 
 // HTTPFirewallPolicy 防火墙策略
 type HTTPFirewallPolicy struct {
-	Id           int64                       `yaml:"id" json:"id"`
-	IsOn         bool                        `yaml:"isOn" json:"isOn"`
-	Name         string                      `yaml:"name" json:"name"`
-	Description  string                      `yaml:"description" json:"description"`
-	Inbound      *HTTPFirewallInboundConfig  `yaml:"inbound" json:"inbound"`
-	Outbound     *HTTPFirewallOutboundConfig `yaml:"outbound" json:"outbound"`
-	BlockOptions *HTTPFirewallBlockAction    `yaml:"blockOptions" json:"blockOptions"`
-	Mode         FirewallMode                `yaml:"mode" json:"mode"`
+	Id               int64                        `yaml:"id" json:"id"`
+	IsOn             bool                         `yaml:"isOn" json:"isOn"`
+	Name             string                       `yaml:"name" json:"name"`
+	Description      string                       `yaml:"description" json:"description"`
+	Inbound          *HTTPFirewallInboundConfig   `yaml:"inbound" json:"inbound"`
+	Outbound         *HTTPFirewallOutboundConfig  `yaml:"outbound" json:"outbound"`
+	BlockOptions     *HTTPFirewallBlockAction     `yaml:"blockOptions" json:"blockOptions"`
+	CaptchaOptions   *HTTPFirewallCaptchaAction   `yaml:"captchaOptions" json:"captchaOptions"`
+	Mode             FirewallMode                 `yaml:"mode" json:"mode"`
+	UseLocalFirewall bool                         `yaml:"useLocalFirewall" json:"useLocalFirewall"`
+	SYNFlood         *SYNFloodConfig              `yaml:"synFlood" json:"synFlood"`
+	Log              *HTTPFirewallPolicyLogConfig `yaml:"log" json:"log"` // 强制记录日志
 }
 
 // Init 初始化
@@ -22,8 +26,23 @@ func (this *HTTPFirewallPolicy) Init() error {
 			return err
 		}
 	}
+
 	if this.Outbound != nil {
 		err := this.Outbound.Init()
+		if err != nil {
+			return err
+		}
+	}
+
+	if this.SYNFlood != nil {
+		err := this.SYNFlood.Init()
+		if err != nil {
+			return err
+		}
+	}
+
+	if this.Log != nil {
+		err := this.Log.Init()
 		if err != nil {
 			return err
 		}
@@ -48,6 +67,16 @@ func (this *HTTPFirewallPolicy) AllRuleGroups() []*HTTPFirewallRuleGroup {
 func (this *HTTPFirewallPolicy) FindRuleGroupWithCode(code string) *HTTPFirewallRuleGroup {
 	for _, g := range this.AllRuleGroups() {
 		if g.Code == code {
+			return g
+		}
+	}
+	return nil
+}
+
+// FindRuleGroupWithName 根据名称查找分组
+func (this *HTTPFirewallPolicy) FindRuleGroupWithName(name string) *HTTPFirewallRuleGroup {
+	for _, g := range this.AllRuleGroups() {
+		if g.Name == name {
 			return g
 		}
 	}

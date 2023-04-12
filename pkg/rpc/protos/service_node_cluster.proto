@@ -10,6 +10,7 @@ import "models/rpc_messages.proto";
 import "models/model_dns_domain.proto";
 import "models/model_dns_provider.proto";
 
+// 边缘节点集群管理服务
 service NodeClusterService {
 	// 创建集群
 	rpc createNodeCluster (CreateNodeClusterRequest) returns (CreateNodeClusterResponse);
@@ -112,6 +113,33 @@ service NodeClusterService {
 
 	// 取得集群的配置概要信息
 	rpc findEnabledNodeClusterConfigInfo (FindEnabledNodeClusterConfigInfoRequest) returns (FindEnabledNodeClusterConfigInfoResponse);
+
+	// 设置集群是否置顶
+	rpc updateNodeClusterPinned(UpdateNodeClusterPinnedRequest) returns (RPCSuccess);
+
+	// 读取集群WebP策略
+	rpc findEnabledNodeClusterWebPPolicy(FindEnabledNodeClusterWebPPolicyRequest) returns (FindEnabledNodeClusterWebPPolicyResponse);
+
+	// 设置集群WebP策略
+	rpc updateNodeClusterWebPPolicy(UpdateNodeClusterWebPPolicyRequest) returns (RPCSuccess);
+
+	// 读取集群的UAM策略
+	rpc findEnabledNodeClusterUAMPolicy(FindEnabledNodeClusterUAMPolicyRequest) returns (FindEnabledNodeClusterUAMPolicyResponse);
+
+	// 设置集群的UAM策略
+	rpc updateNodeClusterUAMPolicy(UpdateNodeClusterUAMPolicyRequest) returns (RPCSuccess);
+
+	// 获取集群的DDoS设置
+	rpc findNodeClusterDDoSProtection(FindNodeClusterDDoSProtectionRequest) returns (FindNodeClusterDDoSProtectionResponse);
+
+	// 修改集群的DDoS设置
+	rpc updateNodeClusterDDoSProtection(UpdateNodeClusterDDoSProtectionRequest) returns (RPCSuccess);
+
+	// 获取集群的全局服务设置
+	rpc findNodeClusterGlobalServerConfig(FindNodeClusterGlobalServerConfigRequest) returns (FindNodeClusterGlobalServerConfigResponse);
+
+	// 修改集群的全局服务设置
+	rpc updateNodeClusterGlobalServerConfig(UpdateNodeClusterGlobalServerConfigRequest) returns (RPCSuccess);
 }
 
 // 获取所有集群的信息
@@ -130,9 +158,12 @@ message CreateNodeClusterRequest {
 	string installDir = 3;
 	int64 dnsDomainId = 4;
 	string dnsName = 5;
+	int32 dnsTTL = 9;
 	int64 httpCachePolicyId = 6;
 	int64 httpFirewallPolicyId = 7;
 	bytes systemServicesJSON = 8; // 系统服务设置
+	bytes globalServerConfigJSON = 10; // 服务全局设置
+	bool autoInstallNftables = 11; // 自动安装nftables
 }
 
 message CreateNodeClusterResponse {
@@ -146,6 +177,11 @@ message UpdateNodeClusterRequest {
 	int64 nodeGrantId = 3;
 	string installDir = 4;
 	string timeZone = 5;
+	int32 nodeMaxThreads = 6;
+	bool autoOpenPorts = 8;
+	bytes clockJSON = 9;
+	bool autoRemoteStart = 10;
+	bool autoInstallNftables = 11;
 }
 
 // 删除集群
@@ -248,6 +284,8 @@ message FindEnabledNodeClusterDNSResponse {
 	bool serversAutoSync = 5;
 	repeated string cnameRecords = 7;
 	int32 ttl = 8;
+	bool cnameAsDomain = 9;
+	bool includingLnNodes = 10;
 }
 
 // 计算使用某个DNS服务商的集群数量
@@ -288,6 +326,8 @@ message UpdateNodeClusterDNSRequest {
 	bool serversAutoSync = 5;
 	repeated string cnameRecords = 6;
 	int32 ttl = 7;
+	bool cnameAsDomain = 8;
+	bool includingLnNodes = 9;
 }
 
 // 检查集群的DNS是否有变化
@@ -415,4 +455,74 @@ message FindEnabledNodeClusterConfigInfoResponse {
 	bool hasMessageReceivers = 4;
 	bool isTOAEnabled = 5;
 	bool hasMetricItems = 6;
+	bool webpIsOn = 7;
+	bool uamIsOn = 10;
+	bool hasSystemServices = 8;
+	bool hasDDoSProtection = 9;
+}
+
+// 设置集群是否置顶
+message UpdateNodeClusterPinnedRequest {
+	int64 nodeClusterId = 1;
+	bool isPinned = 2;
+}
+
+// 读取集群WebP策略
+message FindEnabledNodeClusterWebPPolicyRequest {
+	int64 nodeClusterId = 1;
+}
+
+message FindEnabledNodeClusterWebPPolicyResponse {
+	bytes webpPolicyJSON = 1;
+}
+
+// 设置集群WebP策略
+message UpdateNodeClusterWebPPolicyRequest {
+	int64 nodeClusterId = 1;
+	bytes webpPolicyJSON = 2;
+}
+
+// 读取集群的UAM策略
+message FindEnabledNodeClusterUAMPolicyRequest {
+	int64 nodeClusterId = 1;
+}
+
+message FindEnabledNodeClusterUAMPolicyResponse {
+	bytes uamPolicyJSON = 1;
+}
+
+// 设置集群的UAM策略
+message UpdateNodeClusterUAMPolicyRequest {
+	int64 nodeClusterId = 1;
+	bytes uamPolicyJSON = 2;
+}
+
+// 获取集群的DDoS设置
+message FindNodeClusterDDoSProtectionRequest {
+	int64 nodeClusterId = 1;
+}
+
+message FindNodeClusterDDoSProtectionResponse {
+	bytes ddosProtectionJSON = 1;
+}
+
+// 修改集群的DDoS设置
+message UpdateNodeClusterDDoSProtectionRequest {
+	int64 nodeClusterId = 1;
+	bytes ddosProtectionJSON = 2;
+}
+
+// 获取集群的全局服务设置
+message FindNodeClusterGlobalServerConfigRequest {
+	int64 nodeClusterId = 1;
+}
+
+message FindNodeClusterGlobalServerConfigResponse {
+	bytes globalServerConfigJSON = 1;
+}
+
+// 修改集群的全局服务设置
+message UpdateNodeClusterGlobalServerConfigRequest {
+	int64 nodeClusterId = 1;
+	bytes globalServerConfigJSON = 2;
 }

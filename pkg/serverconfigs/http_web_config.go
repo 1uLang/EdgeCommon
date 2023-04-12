@@ -40,9 +40,16 @@ type HTTPWebConfig struct {
 
 	HostRedirects []*HTTPHostRedirectConfig `yaml:"hostRedirects" json:"hostRedirects"` // 主机跳转
 	Auth          *HTTPAuthConfig           `yaml:"auth" json:"auth"`                   // 认证配置
+	Referers      *ReferersConfig           `yaml:"referers" json:"referers"`           // 防盗链设置
 
 	RemoteAddr   *HTTPRemoteAddrConfig `yaml:"remoteAddr" json:"remoteAddr"`     // 客户端IP获取方式
 	MergeSlashes bool                  `yaml:"mergeSlashes" json:"mergeSlashes"` // 是否合并路径中的斜杠（/）
+
+	RequestLimit   *HTTPRequestLimitConfig   `yaml:"requestLimit" json:"requestLimit"`     // 并发请求限制
+	RequestScripts *HTTPRequestScriptsConfig `yaml:"requestScripts" json:"requestScripts"` // HTTP请求相关脚本
+
+	// UAM
+	UAM *UAMConfig `yaml:"uam" json:"uam"`
 }
 
 func (this *HTTPWebConfig) Init() error {
@@ -247,6 +254,30 @@ func (this *HTTPWebConfig) Init() error {
 	// remoteAddr
 	if this.RemoteAddr != nil {
 		err := this.RemoteAddr.Init()
+		if err != nil {
+			return err
+		}
+	}
+
+	// request limit
+	if this.RequestLimit != nil {
+		err := this.RequestLimit.Init()
+		if err != nil {
+			return err
+		}
+	}
+
+	// request script
+	if this.RequestScripts != nil {
+		err := this.RequestScripts.Init()
+		if err != nil {
+			return err
+		}
+	}
+
+	// uam
+	if this.UAM != nil {
+		err := this.UAM.Init()
 		if err != nil {
 			return err
 		}

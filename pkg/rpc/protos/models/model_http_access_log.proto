@@ -25,6 +25,7 @@ message HTTPAccessLog {
 	double requestTime = 13;
 	string requestMethod = 14;
 	string requestFilename = 15;
+	bytes requestBody = 51;
 	string scheme = 16;
 	string proto = 17;
 	int64 bytesSent = 18;
@@ -51,8 +52,9 @@ message HTTPAccessLog {
 	string serverProtocol = 39;
 	string hostname = 40;
 
-	// 代理相关
+	// 源站相关
 	string originAddress = 41;
+	int32 originStatus = 52;
 
 	// 错误信息
 	repeated string errors = 42;

@@ -7,13 +7,18 @@ import "models/model_server.proto";
 import "models/model_dns_domain.proto";
 import "models/model_server_name_auditing_result.proto";
 import "models/rpc_messages.proto";
+import "models/model_user_plan.proto";
 
+// 网站服务相关服务
 service ServerService {
 	// 创建服务
 	rpc createServer (CreateServerRequest) returns (CreateServerResponse);
 
 	// 修改服务基本信息
 	rpc updateServerBasic (UpdateServerBasicRequest) returns (RPCSuccess);
+
+	// 修改服务所在分组
+	rpc updateServerGroupIds(UpdateServerGroupIdsRequest) returns (RPCSuccess);
 
 	// 修改服务是否启用
 	rpc updateServerIsOn (UpdateServerIsOnRequest) returns (RPCSuccess);
@@ -55,7 +60,13 @@ service ServerService {
 	rpc updateServerDNS(UpdateServerDNSRequest) returns (RPCSuccess);
 
 	// 重新生成CNAME
-	rpc regenerateServerCNAME(RegenerateServerCNAMERequest) returns (RPCSuccess);
+	rpc regenerateServerDNSName(RegenerateServerDNSNameRequest) returns (RPCSuccess);
+
+	// 修改服务的CNAME
+	rpc updateServerDNSName(UpdateServerDNSNameRequest) returns (RPCSuccess);
+
+	// 使用CNAME查找服务
+	rpc findServerIdWithDNSName(FindServerIdWithDNSNameRequest) returns (FindServerIdWithDNSNameResponse);
 
 	// 计算匹配的服务数量
 	rpc countAllEnabledServersMatch (CountAllEnabledServersMatchRequest) returns (RPCCountResponse);
@@ -137,6 +148,18 @@ service ServerService {
 
 	// 修改服务套餐
 	rpc updateServerUserPlan(UpdateServerUserPlanRequest) returns (RPCSuccess);
+
+	// 获取服务套餐信息
+	rpc findServerUserPlan(FindServerUserPlanRequest) returns (FindServerUserPlanResponse);
+
+	// 获取服务配置
+	rpc composeServerConfig(ComposeServerConfigRequest) returns (ComposeServerConfigResponse);
+
+	// 修改服务UAM设置
+	rpc updateServerUAM(UpdateServerUAMRequest) returns (RPCSuccess);
+
+	// 查找服务UAM设置
+	rpc findEnabledServerUAM(FindEnabledServerUAMRequest) returns (FindEnabledServerUAMResponse);
 }
 
 // 创建服务
@@ -148,7 +171,7 @@ message CreateServerRequest {
 	string description = 5;
 
 	// 配置相关
-	bytes serverNamesJON = 8;
+	bytes serverNamesJON = 8; // @link json:server_names
 	bytes httpJSON = 9;
 	bytes httpsJSON = 10;
 	bytes tcpJSON = 11;
@@ -175,8 +198,15 @@ message UpdateServerBasicRequest {
 	string name = 2;
 	string description = 3;
 	int64 nodeClusterId = 4;
+	bool keepOldConfigs = 7; // 是否在老节点上保留一段时间配置
 	bool isOn = 5;
 	repeated int64 serverGroupIds = 6;
+}
+
+// 修改服务所在分组
+message UpdateServerGroupIdsRequest {
+	int64 serverId = 1;
+	repeated int64 serverGroupIds = 2;
 }
 
 // 修改服务启是否启用
@@ -235,6 +265,7 @@ message FindServerNamesRequest {
 message FindServerNamesResponse {
 	bytes serverNamesJSON = 1;
 	bool isAuditing = 2;
+	int64 auditingAt = 5;
 	bytes auditingServerNamesJSON = 3;
 	ServerNameAuditingResult auditingResult = 4;
 }
@@ -258,13 +289,29 @@ message UpdateServerDNSRequest {
 }
 
 // 重新生成CNAME
-message RegenerateServerCNAMERequest {
+message RegenerateServerDNSNameRequest {
+	int64 serverId = 1;
+}
+
+// 修改服务的CNAME
+message UpdateServerDNSNameRequest {
+	int64 serverId = 1;
+	string dnsName = 2;
+}
+
+// 使用CNAME查找服务
+message FindServerIdWithDNSNameRequest {
+	int64 nodeClusterId = 1;
+	string dnsName = 2;
+}
+
+message FindServerIdWithDNSNameResponse {
 	int64 serverId = 1;
 }
 
 // 计算服务数量
 message CountAllEnabledServersMatchRequest {
-	int64 serverGroupId = 1;
+	int64 serverGroupId = 1; // 服务分组ID，如果为-1表示查找未分组
 	string keyword = 2;
 	int64 userId = 3;
 	int64 nodeClusterId = 4;
@@ -276,12 +323,14 @@ message CountAllEnabledServersMatchRequest {
 message ListEnabledServersMatchRequest {
 	int64 offset = 1;
 	int64 size = 2;
-	int64 serverGroupId = 3;
+	int64 serverGroupId = 3;  // 服务分组ID，如果为-1表示查找未分组
 	string keyword = 4;
 	int64 userId = 5;
 	int64 nodeClusterId = 6;
 	int32 auditingFlag = 7;
 	string protocolFamily = 8;
+	bool trafficOutAsc = 9;
+	bool trafficOutDesc = 10;
 }
 
 message ListEnabledServersMatchResponse {
@@ -442,7 +491,10 @@ message UploadServerHTTPRequestStatRequest {
 		string countryName = 2;
 		string provinceName = 3;
 		string cityName = 4;
-		int64 count = 5;
+		int64 countRequests = 5;
+		int64 bytes = 6;
+		int64 countAttackRequests = 7;
+		int64 attackBytes = 8;
 	}
 
 	message RegionProvider {
@@ -478,7 +530,8 @@ message CheckServerNameDuplicationInNodeClusterRequest {
 	int64 nodeClusterId = 1;
 	repeated string serverNames = 2; // 可以同时检查一批域名
 	int64 excludeServerId = 3; // 要排除的服务ID
-	bool all = 4;// 检测审核通过与正在审核的所有域名
+	bool supportWildcard = 4;// 支持泛解析
+	bool all = 5;// 检测审核通过与正在审核的所有域名
 }
 
 message CheckServerNameDuplicationInNodeClusterResponse {
@@ -511,9 +564,9 @@ message FindNearbyServersResponse {
 
 // 清除缓存
 message PurgeServerCacheRequest {
-	repeated string domains = 1;
 	repeated string keys = 2;
 	repeated string prefixes = 3;
+	string description = 4; // 任务描述
 }
 
 message PurgeServerCacheResponse {
@@ -540,4 +593,37 @@ message UpdateServerTrafficLimitRequest {
 message UpdateServerUserPlanRequest {
 	int64 serverId = 1;
 	int64 userPlanId = 2;
+}
+
+// 获取服务套餐信息
+message FindServerUserPlanRequest {
+	int64 serverId = 1;
+}
+
+message FindServerUserPlanResponse {
+	UserPlan userPlan = 1;
+}
+
+// 获取服务配置
+message ComposeServerConfigRequest {
+	int64 serverId = 1;
+}
+
+message ComposeServerConfigResponse {
+	bytes serverConfigJSON = 1;
+}
+
+// 修改服务UAM设置
+message UpdateServerUAMRequest {
+	int64 serverId = 1;
+	bytes uamJSON = 2;
+}
+
+// 查找服务UAM设置
+message FindEnabledServerUAMRequest {
+	int64 serverId = 1;
+}
+
+message FindEnabledServerUAMResponse {
+	bytes uamJSON = 1;
 }

@@ -8,6 +8,7 @@ import "models/model_admin_list.proto";
 import "models/rpc_messages.proto";
 import "service_server_stat_board.proto";
 
+// 管理员服务
 service AdminService {
 	// 登录
 	rpc loginAdmin (LoginAdminRequest) returns (LoginAdminResponse);
@@ -208,6 +209,7 @@ message ComposeAdminDashboardResponse {
 	int64 countNodes = 2;
 	int64 countOfflineNodes = 9;
 	int64 countServers = 3;
+	int64 countAuditingServers = 13;
 	int64 countUsers = 4;
 	int64 countAPINodes = 5;
 	int64 countOfflineAPINodes = 10;
@@ -230,7 +232,7 @@ message ComposeAdminDashboardResponse {
 
 	repeated NodeStat topNodeStats = 38;
 	repeated DomainStat topDomainStats = 39;
-
+	repeated CountryStat topCountryStats = 42;
 
 	repeated MetricDataChart metricDataCharts = 40;
 
@@ -268,10 +270,19 @@ message ComposeAdminDashboardResponse {
 		int64 bytes = 4;
 	}
 
+	message CountryStat {
+		string countryName = 1;
+		int64 bytes = 2;
+		int64 countRequests = 3;
+		float percent = 4; // 流量占比
+		int64 countAttackRequests = 6;
+		int64 attackBytes = 7;
+	}
+
 	// 节点升级信息
 	message UpgradeInfo {
-		int64 countNodes = 1;
-		string newVersion = 2;
+		int64 countNodes = 1; // 节点数
+		string newVersion = 2; // 新版本
 	}
 }
 

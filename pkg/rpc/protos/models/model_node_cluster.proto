@@ -17,4 +17,10 @@ message NodeCluster {
 	int64 httpFirewallPolicyId = 11;
 	bool isOn = 12;
 	string timeZone = 13;
+	int32 nodeMaxThreads = 14;
+	bool autoOpenPorts = 16;
+	bool isPinned = 17;
+	bytes clockJSON = 18;
+	bool autoRemoteStart = 19;
+	bool autoInstallNftables = 20;
 }

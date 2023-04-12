@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-// SSL证书
+// SSLCertConfig SSL证书
 type SSLCertConfig struct {
 	Id          int64  `yaml:"id" json:"id"`
 	IsOn        bool   `yaml:"isOn" json:"isOn"`
@@ -29,21 +29,26 @@ type SSLCertConfig struct {
 	DNSNames    []string `yaml:"dnsNames" json:"dnsNames"`
 	CommonNames []string `yaml:"commonNames" json:"commonNames"`
 
+	// OCSP
+	OCSP          []byte `yaml:"ocsp" json:"ocsp"`
+	OCSPExpiresAt int64  `yaml:"ocspExpiresAt" json:"ocspExpiresAt"`
+	OCSPError     string `yaml:"ocspError" json:"ocspError"`
+
 	cert      *tls.Certificate
 	timeBegin time.Time
 	timeEnd   time.Time
 }
 
-// 校验
+// Init 校验
 func (this *SSLCertConfig) Init() error {
 	var commonNames []string // 发行组织
 	var dnsNames []string    // 域名
 
 	// 分析证书
 	if this.IsCA { // CA证书
-		data := this.CertData
+		var data = this.CertData
 
-		index := -1
+		var index = -1
 		this.cert = &tls.Certificate{
 			Certificate: [][]byte{},
 		}
@@ -52,9 +57,6 @@ func (this *SSLCertConfig) Init() error {
 
 			block, rest := pem.Decode(data)
 			if block == nil {
-				break
-			}
-			if len(rest) == 0 {
 				break
 			}
 			this.cert.Certificate = append(this.cert.Certificate, block.Bytes)
@@ -79,6 +81,10 @@ func (this *SSLCertConfig) Init() error {
 				this.timeBegin = c.NotBefore
 				this.timeEnd = c.NotAfter
 			}
+
+			if len(rest) == 0 {
+				break
+			}
 		}
 	} else { // 证书+私钥
 		cert, err := tls.X509KeyPair(this.CertData, this.KeyData)
@@ -91,6 +97,11 @@ func (this *SSLCertConfig) Init() error {
 			if err != nil {
 				continue
 			}
+
+			if cert.Leaf == nil {
+				cert.Leaf = c
+			}
+
 			for _, dnsName := range c.DNSNames {
 				if !lists.ContainsString(dnsNames, dnsName) {
 					dnsNames = append(dnsNames, dnsName)
@@ -117,7 +128,7 @@ func (this *SSLCertConfig) Init() error {
 	return nil
 }
 
-// 校验是否匹配某个域名
+// MatchDomain 校验是否匹配某个域名
 func (this *SSLCertConfig) MatchDomain(domain string) bool {
 	if len(this.DNSNames) == 0 {
 		return false
@@ -125,17 +136,17 @@ func (this *SSLCertConfig) MatchDomain(domain string) bool {
 	return configutils.MatchDomains(this.DNSNames, domain)
 }
 
-// 获取证书对象
+// CertObject 获取证书对象
 func (this *SSLCertConfig) CertObject() *tls.Certificate {
 	return this.cert
 }
 
-// 开始时间
+// TimeBegin 开始时间
 func (this *SSLCertConfig) TimeBegin() time.Time {
 	return this.timeBegin
 }
 
-// 结束时间
+// TimeEnd 结束时间
 func (this *SSLCertConfig) TimeEnd() time.Time {
 	return this.timeEnd
 }

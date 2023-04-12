@@ -1,47 +1,91 @@
 package nodeconfigs
 
 import (
+	"crypto/sha256"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/1uLang/EdgeCommon/pkg/serverconfigs"
+	"github.com/1uLang/EdgeCommon/pkg/serverconfigs/ddosconfigs"
 	"github.com/1uLang/EdgeCommon/pkg/serverconfigs/firewallconfigs"
 	"github.com/1uLang/EdgeCommon/pkg/serverconfigs/shared"
 	"github.com/iwind/TeaGo/Tea"
-	"github.com/iwind/TeaGo/logs"
 	"github.com/iwind/TeaGo/maps"
-	"io/ioutil"
+	"os"
+	"reflect"
 	"strconv"
 )
 
 var sharedNodeConfig *NodeConfig = nil
 
+type ServerError struct {
+	Id      int64
+	Message string
+}
+
+func NewServerError(serverId int64, message string) *ServerError {
+	return &ServerError{Id: serverId, Message: message}
+}
+
 // NodeConfig 边缘节点配置
 type NodeConfig struct {
-	Id                     int64                         `yaml:"id" json:"id"`
-	NodeId                 string                        `yaml:"nodeId" json:"nodeId"`
-	Secret                 string                        `yaml:"secret" json:"secret"`
-	IsOn                   bool                          `yaml:"isOn" json:"isOn"`
-	Servers                []*serverconfigs.ServerConfig `yaml:"servers" json:"servers"`
-	SupportCNAME           bool                          `yaml:"supportCNAME" json:"supportCNAME"`
-	Version                int64                         `yaml:"version" json:"version"`
-	Name                   string                        `yaml:"name" json:"name"`
+	Id           int64                         `yaml:"id" json:"id"`
+	NodeId       string                        `yaml:"nodeId" json:"nodeId"`
+	Secret       string                        `yaml:"secret" json:"secret"`
+	IsOn         bool                          `yaml:"isOn" json:"isOn"`
+	Servers      []*serverconfigs.ServerConfig `yaml:"servers" json:"servers"`
+	SupportCNAME bool                          `yaml:"supportCNAME" json:"supportCNAME"`
+	Version      int64                         `yaml:"version" json:"version"`
+	Name         string                        `yaml:"name" json:"name"`
+	GroupId      int64                         `yaml:"groupId" json:"groupId"`
+	RegionId     int64                         `yaml:"regionId" json:"regionId"`
+	OCSPVersion  int64                         `yaml:"ocspVersion" json:"ocspVersion"`
+
+	// 性能
 	MaxCPU                 int32                         `yaml:"maxCPU" json:"maxCPU"`
-	RegionId               int64                         `yaml:"regionId" json:"regionId"`
-	MaxCacheDiskCapacity   *shared.SizeCapacity          `yaml:"maxCacheDiskCapacity" json:"maxCacheDiskCapacity"`
-	MaxCacheMemoryCapacity *shared.SizeCapacity          `yaml:"maxCacheMemoryCapacity" json:"maxCacheMemoryCapacity"`
+	CacheDiskDir           string                        `yaml:"cacheDiskDir" json:"cacheDiskDir"`                     // 文件缓存目录
+	MaxCacheDiskCapacity   *shared.SizeCapacity          `yaml:"maxCacheDiskCapacity" json:"maxCacheDiskCapacity"`     // 文件缓存容量
+	MaxCacheMemoryCapacity *shared.SizeCapacity          `yaml:"maxCacheMemoryCapacity" json:"maxCacheMemoryCapacity"` // 内容缓存容量
+	MaxThreads             int                           `yaml:"maxThreads" json:"maxThreads"`                         // 最大线程数
+	DDoSProtection         *ddosconfigs.ProtectionConfig `yaml:"ddosProtection" json:"ddosProtection"`
+
+	// 级别
+	Level       int32                         `yaml:"level" json:"level"`
+	ParentNodes map[int64][]*ParentNodeConfig `yaml:"parentNodes" json:"parentNodes"` // clusterId => []*ParentNodeConfig
 
 	// 全局配置
-	GlobalConfig *serverconfigs.GlobalConfig `yaml:"globalConfig" json:"globalConfig"` // 全局配置
+	GlobalConfig       *serverconfigs.GlobalConfig       `yaml:"globalConfig" json:"globalConfig"`             // 全局配置
+	GlobalServerConfig *serverconfigs.GlobalServerConfig `yaml:"globalServerConfig" json:"globalServerConfig"` // 服务全局配置，用来替代 GlobalConfig
+	ProductConfig      *ProductConfig                    `yaml:"productConfig" json:"productConfig"`
 
 	// 集群统一配置
 	HTTPFirewallPolicies []*firewallconfigs.HTTPFirewallPolicy   `yaml:"httpFirewallPolicies" json:"httpFirewallPolicies"`
 	HTTPCachePolicies    []*serverconfigs.HTTPCachePolicy        `yaml:"httpCachePolicies" json:"httpCachePolicies"`
 	TOA                  *TOAConfig                              `yaml:"toa" json:"toa"`
-	SystemServices       map[string]maps.Map                     `yaml:"systemServices" json:"systemServices"` // 系统服务配置 type => params
-	FirewallActions      []*firewallconfigs.FirewallActionConfig `yaml:"firewallActions" json:"firewallActions"`
-	TimeZone             string                                  `yaml:"timeZone" json:"timeZone"`
+	SystemServices       map[string]maps.Map                     `yaml:"systemServices" json:"systemServices"`           // 系统服务配置 type => params
+	FirewallActions      []*firewallconfigs.FirewallActionConfig `yaml:"firewallActions" json:"firewallActions"`         // 防火墙动作
+	TimeZone             string                                  `yaml:"timeZone" json:"timeZone"`                       // 自动设置时区
+	AutoOpenPorts        bool                                    `yaml:"autoOpenPorts" json:"autoOpenPorts"`             // 自动开放所需端口
+	Clock                *ClockConfig                            `yaml:"clock" json:"clock"`                             // 时钟配置
+	AutoInstallNftables  bool                                    `yaml:"autoInstallNftables" json:"autoInstallNftables"` // 自动安装nftables
 
+	// 指标
 	MetricItems []*serverconfigs.MetricItemConfig `yaml:"metricItems" json:"metricItems"`
+
+	// 自动白名单
+	AllowedIPs []string `yaml:"allowedIPs" json:"allowedIPs"`
+
+	// 脚本
+	CommonScripts []*serverconfigs.CommonScript `yaml:"commonScripts" json:"commonScripts"`
+
+	// WebP
+	WebPImagePolicies map[int64]*WebPImagePolicy `yaml:"webpImagePolicies" json:"webpImagePolicies"` // clusterId => *WebPImagePolicy
+
+	// UAM相关配置
+	UAMPolicies map[int64]*UAMPolicy `yaml:"uamPolicies" yaml:"uamPolicies" json:"uamPolicies"` // clusterId => *UAMPolicy
+
+	// DNS
+	DNSResolver *DNSResolverConfig `yaml:"dnsResolver" json:"dnsResolver"`
 
 	paddedId string
 
@@ -53,6 +97,14 @@ type NodeConfig struct {
 
 	// 源站集合
 	originMap map[int64]*serverconfigs.OriginConfig
+
+	// 自动白名单
+	allowedIPMap map[string]bool
+
+	// syn flood
+	synFlood *firewallconfigs.SYNFloodConfig
+
+	secretHash string
 }
 
 // SharedNodeConfig 取得当前节点配置单例
@@ -64,12 +116,12 @@ func SharedNodeConfig() (*NodeConfig, error) {
 		return sharedNodeConfig, nil
 	}
 
-	data, err := ioutil.ReadFile(Tea.ConfigFile("node.json"))
+	data, err := os.ReadFile(Tea.ConfigFile("node.json"))
 	if err != nil {
 		return &NodeConfig{}, err
 	}
 
-	config := &NodeConfig{}
+	var config = &NodeConfig{}
 	err = json.Unmarshal(data, &config)
 	if err != nil {
 		return &NodeConfig{}, err
@@ -86,33 +138,74 @@ func ResetNodeConfig(nodeConfig *NodeConfig) {
 	shared.Locker.Unlock()
 }
 
+// CloneNodeConfig 复制节点配置
+func CloneNodeConfig(nodeConfig *NodeConfig) (*NodeConfig, error) {
+	if nodeConfig == nil {
+		return nil, errors.New("node config should not be nil")
+	}
+
+	var newConfigValue = reflect.Indirect(reflect.ValueOf(&NodeConfig{}))
+	var oldValue = reflect.Indirect(reflect.ValueOf(nodeConfig))
+	var valueType = oldValue.Type()
+	for i := 0; i < valueType.NumField(); i++ {
+		var field = valueType.Field(i)
+		var fieldName = field.Name
+		if !field.IsExported() {
+			continue
+		}
+		if fieldName == "Servers" {
+			continue
+		}
+
+		newConfigValue.FieldByName(fieldName).Set(oldValue.FieldByName(fieldName))
+	}
+
+	var newConfig = newConfigValue.Interface().(NodeConfig)
+	newConfig.Servers = append([]*serverconfigs.ServerConfig{}, nodeConfig.Servers...)
+	return &newConfig, nil
+}
+
 // Init 初始化
-func (this *NodeConfig) Init() error {
+func (this *NodeConfig) Init() (err error, serverErrors []*ServerError) {
+	this.secretHash = fmt.Sprintf("%x", sha256.Sum256([]byte(this.NodeId+"@"+this.Secret)))
 	this.paddedId = fmt.Sprintf("%08d", this.Id)
 
 	// servers
 	for _, server := range this.Servers {
-		err := server.Init()
-		if err != nil {
+		// 避免在运行时重新初始化
+		if server.IsInitialized() {
+			continue
+		}
+
+		// 初始化
+		errs := server.Init()
+		if len(errs) > 0 {
 			// 这里不返回错误，而是继续往下，防止单个服务错误而影响其他服务
-			logs.Println("[INIT]server '" + strconv.FormatInt(server.Id, 10) + "' init failed: " + err.Error())
+			for _, serverErr := range errs {
+				serverErrors = append(serverErrors, NewServerError(server.Id, "server '"+strconv.FormatInt(server.Id, 10)+"' init failed: "+serverErr.Error()))
+			}
+		}
+
+		// 检查ACME支持
+		if server.IsOn && server.SupportCNAME {
+			this.SupportCNAME = true
 		}
 	}
 
 	// global config
 	if this.GlobalConfig != nil {
-		err := this.GlobalConfig.Init()
+		err = this.GlobalConfig.Init()
 		if err != nil {
-			return err
+			return
 		}
 	}
 
 	// cache policy
 	if len(this.HTTPCachePolicies) > 0 {
 		for _, policy := range this.HTTPCachePolicies {
-			err := policy.Init()
+			err = policy.Init()
 			if err != nil {
-				return err
+				return
 			}
 		}
 	}
@@ -120,18 +213,18 @@ func (this *NodeConfig) Init() error {
 	// firewall policy
 	if len(this.HTTPFirewallPolicies) > 0 {
 		for _, policy := range this.HTTPFirewallPolicies {
-			err := policy.Init()
+			err = policy.Init()
 			if err != nil {
-				return err
+				return
 			}
 		}
 	}
 
 	// TOA
 	if this.TOA != nil {
-		err := this.TOA.Init()
+		err = this.TOA.Init()
 		if err != nil {
-			return err
+			return
 		}
 	}
 
@@ -139,10 +232,14 @@ func (this *NodeConfig) Init() error {
 	this.originMap = map[int64]*serverconfigs.OriginConfig{}
 
 	// 查找FirewallPolicy
+	this.synFlood = nil
 	this.firewallPolicies = []*firewallconfigs.HTTPFirewallPolicy{}
 	for _, policy := range this.HTTPFirewallPolicies {
 		if policy.IsOn {
 			this.firewallPolicies = append(this.firewallPolicies, policy)
+			if policy.SYNFlood != nil && policy.SYNFlood.IsOn {
+				this.synFlood = policy.SYNFlood
+			}
 		}
 	}
 	for _, server := range this.Servers {
@@ -190,25 +287,96 @@ func (this *NodeConfig) Init() error {
 
 	// firewall actions
 	for _, action := range this.FirewallActions {
-		err := action.Init()
+		err = action.Init()
 		if err != nil {
-			return err
+			return
 		}
 	}
 
 	// metric items
 	this.hasHTTPConnectionMetrics = false
 	for _, item := range this.MetricItems {
-		err := item.Init()
+		err = item.Init()
 		if err != nil {
-			return err
+			return
 		}
 		if item.IsOn && item.HasHTTPConnectionValue() {
 			this.hasHTTPConnectionMetrics = true
 		}
 	}
 
-	return nil
+	// 自动白名单
+	this.allowedIPMap = map[string]bool{}
+	for _, allowIP := range this.AllowedIPs {
+		this.allowedIPMap[allowIP] = true
+	}
+
+	// webp image policy
+	if this.WebPImagePolicies != nil {
+		for _, policy := range this.WebPImagePolicies {
+			err = policy.Init()
+			if err != nil {
+				return
+			}
+		}
+	}
+
+	// uam policy
+	if this.UAMPolicies != nil {
+		for _, policy := range this.UAMPolicies {
+			err = policy.Init()
+			if err != nil {
+				return
+			}
+		}
+	}
+
+	// dns resolver
+	if this.DNSResolver != nil {
+		err = this.DNSResolver.Init()
+		if err != nil {
+			return
+		}
+	}
+
+	// 全局服务设置
+	if this.GlobalServerConfig != nil {
+		err = this.GlobalServerConfig.Init()
+		if err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+// AddServer 添加服务
+func (this *NodeConfig) AddServer(server *serverconfigs.ServerConfig) {
+	if server == nil {
+		return
+	}
+
+	var found = false
+	for index, oldServer := range this.Servers {
+		if oldServer.Id == server.Id {
+			this.Servers[index] = server
+			found = true
+			break
+		}
+	}
+	if !found {
+		this.Servers = append(this.Servers, server)
+	}
+}
+
+// RemoveServer 删除服务
+func (this *NodeConfig) RemoveServer(serverId int64) {
+	for index, oldServer := range this.Servers {
+		if oldServer.Id == serverId {
+			this.Servers = append(this.Servers[:index], this.Servers[index+1:]...)
+			break
+		}
+	}
 }
 
 // AvailableGroups 根据网络地址和协议分组
@@ -251,7 +419,7 @@ func (this *NodeConfig) Save() error {
 		return err
 	}
 
-	return ioutil.WriteFile(Tea.ConfigFile("node.json"), data, 0777)
+	return os.WriteFile(Tea.ConfigFile("node.json"), data, 0777)
 }
 
 // PaddedId 获取填充后的ID
@@ -282,11 +450,25 @@ func (this *NodeConfig) lookupWeb(server *serverconfigs.ServerConfig, web *serve
 		return
 	}
 	if web.FirewallPolicy != nil && web.FirewallPolicy.IsOn {
-		// 复用节点的拦截选项设置
-		if web.FirewallPolicy.BlockOptions == nil && server.HTTPFirewallPolicy != nil && server.HTTPFirewallPolicy.BlockOptions != nil {
-			web.FirewallPolicy.BlockOptions = server.HTTPFirewallPolicy.BlockOptions
+		// 复用节点的选项设置
+		if server.HTTPFirewallPolicy != nil {
+			if (web.FirewallPolicy.BlockOptions == nil || !web.FirewallPolicy.BlockOptions.IsPrior) && server.HTTPFirewallPolicy.BlockOptions != nil {
+				web.FirewallPolicy.BlockOptions = server.HTTPFirewallPolicy.BlockOptions
+			}
+			if (web.FirewallPolicy.CaptchaOptions == nil || !web.FirewallPolicy.CaptchaOptions.IsPrior) && server.HTTPFirewallPolicy.CaptchaOptions != nil {
+				web.FirewallPolicy.CaptchaOptions = server.HTTPFirewallPolicy.CaptchaOptions
+			}
+			if (web.FirewallPolicy.SYNFlood == nil || !web.FirewallPolicy.SYNFlood.IsPrior) && server.HTTPFirewallPolicy.SYNFlood != nil {
+				web.FirewallPolicy.SYNFlood = server.HTTPFirewallPolicy.SYNFlood
+			}
+			if (web.FirewallPolicy.Log == nil || !web.FirewallPolicy.Log.IsPrior) && server.HTTPFirewallPolicy.Log != nil {
+				web.FirewallPolicy.Log = server.HTTPFirewallPolicy.Log
+			}
+
 			web.FirewallPolicy.Mode = server.HTTPFirewallPolicy.Mode
+			web.FirewallPolicy.UseLocalFirewall = server.HTTPFirewallPolicy.UseLocalFirewall
 		}
+
 		this.firewallPolicies = append(this.firewallPolicies, web.FirewallPolicy)
 	}
 	if len(web.Locations) > 0 {
@@ -311,4 +493,59 @@ func (this *NodeConfig) lookupWeb(server *serverconfigs.ServerConfig, web *serve
 			}
 		}
 	}
+}
+
+// IPIsAutoAllowed 检查是否自动允许某个IP
+func (this *NodeConfig) IPIsAutoAllowed(ip string) bool {
+	_, ok := this.allowedIPMap[ip]
+	return ok
+}
+
+// SYNFloodConfig 获取SYN Flood配置
+func (this *NodeConfig) SYNFloodConfig() *firewallconfigs.SYNFloodConfig {
+	return this.synFlood
+}
+
+// UpdateCertOCSP 修改证书OCSP
+func (this *NodeConfig) UpdateCertOCSP(certId int64, ocsp []byte, expiresAt int64) {
+	shared.Locker.Lock()
+	defer shared.Locker.Unlock()
+
+	var servers = this.Servers
+	for _, server := range servers {
+		if server.HTTPS != nil &&
+			server.HTTPS.SSLPolicy != nil &&
+			server.HTTPS.SSLPolicy.OCSPIsOn &&
+			server.HTTPS.SSLPolicy.ContainsCert(certId) {
+			server.HTTPS.SSLPolicy.UpdateCertOCSP(certId, ocsp, expiresAt)
+		}
+
+		if server.TLS != nil &&
+			server.TLS.SSLPolicy != nil &&
+			server.TLS.SSLPolicy.OCSPIsOn &&
+			server.TLS.SSLPolicy.ContainsCert(certId) {
+			server.TLS.SSLPolicy.UpdateCertOCSP(certId, ocsp, expiresAt)
+		}
+	}
+}
+
+// FindWebPImagePolicyWithClusterId 使用集群ID查找WebP策略
+func (this *NodeConfig) FindWebPImagePolicyWithClusterId(clusterId int64) *WebPImagePolicy {
+	if this.WebPImagePolicies == nil {
+		return nil
+	}
+	return this.WebPImagePolicies[clusterId]
+}
+
+// FindUAMPolicyWithClusterId 使用集群ID查找UAM策略
+func (this *NodeConfig) FindUAMPolicyWithClusterId(clusterId int64) *UAMPolicy {
+	if this.UAMPolicies == nil {
+		return nil
+	}
+	return this.UAMPolicies[clusterId]
+}
+
+// SecretHash 对Id和Secret的Hash计算
+func (this *NodeConfig) SecretHash() string {
+	return this.secretHash
 }

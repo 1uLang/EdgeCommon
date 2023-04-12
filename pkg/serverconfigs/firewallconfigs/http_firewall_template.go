@@ -22,6 +22,7 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 		group.Name = "XSS"
 		group.Code = "xss"
 		group.Description = "防跨站脚本攻击（Cross Site Scripting）"
+		group.IsTemplate = true
 
 		{
 			set := &HTTPFirewallRuleSet{}
@@ -96,6 +97,7 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 		group.Name = "文件上传"
 		group.Code = "upload"
 		group.Description = "防止上传可执行脚本文件到服务器"
+		group.IsTemplate = true
 
 		{
 			set := &HTTPFirewallRuleSet{}
@@ -128,6 +130,7 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 		group.Name = "Web Shell"
 		group.Code = "webShell"
 		group.Description = "防止远程执行服务器命令"
+		group.IsTemplate = true
 
 		{
 			set := &HTTPFirewallRuleSet{}
@@ -159,6 +162,7 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 		group.IsOn = true
 		group.Name = "命令注入"
 		group.Code = "commandInjection"
+		group.IsTemplate = true
 
 		{
 			set := &HTTPFirewallRuleSet{}
@@ -198,6 +202,7 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 		group.Name = "路径穿越"
 		group.Code = "pathTraversal"
 		group.Description = "防止读取网站目录之外的其他系统文件"
+		group.IsTemplate = true
 
 		{
 			set := &HTTPFirewallRuleSet{}
@@ -230,6 +235,7 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 		group.Name = "特殊目录"
 		group.Code = "denyDirs"
 		group.Description = "防止通过Web访问到一些特殊目录"
+		group.IsTemplate = true
 
 		{
 			set := &HTTPFirewallRuleSet{}
@@ -246,7 +252,7 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 				IsOn:              true,
 				Param:             "${requestPath}",
 				Operator:          HTTPFirewallRuleOperatorMatch,
-				Value:             `/\.(git|svn|htaccess|idea)\b`, // TODO more keywords here
+				Value:             `/\.(git|svn|htaccess|idea|env)\b`, // TODO more keywords here
 				IsCaseInsensitive: true,
 			})
 			group.AddRuleSet(set)
@@ -262,6 +268,7 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 		group.Name = "SQL注入"
 		group.Code = "sqlInjection"
 		group.Description = "防止SQL注入漏洞"
+		group.IsTemplate = true
 
 		{
 			set := &HTTPFirewallRuleSet{}
@@ -288,7 +295,7 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 
 		{
 			set := &HTTPFirewallRuleSet{}
-			set.IsOn = true
+			set.IsOn = false
 			set.Name = "SQL注释"
 			set.Code = "7002"
 			set.Connector = HTTPFirewallRuleConnectorOr
@@ -369,7 +376,7 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 				IsOn:              true,
 				Param:             "${requestAll}",
 				Operator:          HTTPFirewallRuleOperatorMatch,
-				Value:             `(updatexml|extractvalue|ascii|ord|char|chr|count|concat|rand|floor|substr|length|len|user|database|benchmark|analyse)\s*\(`,
+				Value:             `\b(updatexml|extractvalue|ascii|ord|char|chr|count|concat|rand|floor|substr|length|len|user|database|benchmark|analyse)\s*\(.*\)`,
 				IsCaseInsensitive: true,
 			})
 
@@ -409,11 +416,12 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 		group.Name = "网络爬虫"
 		group.Code = "bot"
 		group.Description = "禁止一些网络爬虫"
+		group.IsTemplate = true
 
 		{
 			set := &HTTPFirewallRuleSet{}
-			set.IsOn = true
-			set.Name = "常见网络爬虫"
+			set.IsOn = false
+			set.Name = "搜索引擎"
 			set.Code = "20001"
 			set.Connector = HTTPFirewallRuleConnectorOr
 			set.Actions = []*HTTPFirewallActionConfig{
@@ -426,7 +434,64 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 				IsOn:              true,
 				Param:             "${userAgent}",
 				Operator:          HTTPFirewallRuleOperatorMatch,
-				Value:             `Googlebot|AdsBot|bingbot|BingPreview|facebookexternalhit|Slurp|Sogou|proximic|Baiduspider|yandex|twitterbot|spider|python`,
+				Value:             `360spider|adldxbot|adsbot-google|applebot|admantx|alexa|baidu|bingbot|bingpreview|facebookexternalhit|googlebot|proximic|slurp|sogou|twitterbot|yandex|spider`,
+				IsCaseInsensitive: true,
+			})
+
+			group.AddRuleSet(set)
+		}
+
+		{
+			set := &HTTPFirewallRuleSet{}
+			set.IsOn = true
+			set.Name = "爬虫工具"
+			set.Code = "20003"
+			set.Connector = HTTPFirewallRuleConnectorAnd
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code: HTTPFirewallActionBlock,
+				},
+			}
+
+			set.AddRule(&HTTPFirewallRule{
+				IsOn:              true,
+				Param:             "${userAgent}",
+				Operator:          HTTPFirewallRuleOperatorMatch,
+				Value:             `python|pycurl|http-client|httpclient|apachebench|nethttp|http_request|java|perl|ruby|scrapy|php|rust`,
+				IsCaseInsensitive: true,
+			})
+			set.AddRule(&HTTPFirewallRule{
+				IsOn:              true,
+				Param:             "${userAgent}",
+				Operator:          HTTPFirewallRuleOperatorNotMatch,
+				Value:             `goedge`,
+				IsCaseInsensitive: true,
+				Description:       "User-Agent白名单",
+			})
+
+			group.AddRuleSet(set)
+		}
+
+		{
+			set := &HTTPFirewallRuleSet{}
+			set.IsOn = true
+			set.Name = "下载工具"
+			set.Code = "20004"
+			set.Connector = HTTPFirewallRuleConnectorOr
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code: HTTPFirewallActionTag,
+					Options: maps.Map{
+						"tags": []string{"download"},
+					},
+				},
+			}
+
+			set.AddRule(&HTTPFirewallRule{
+				IsOn:              true,
+				Param:             "${userAgent}",
+				Operator:          HTTPFirewallRuleOperatorMatch,
+				Value:             `wget|curl`,
 				IsCaseInsensitive: true,
 			})
 
@@ -467,6 +532,7 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 		group.Name = "CC攻击"
 		group.Description = "Challenge Collapsar，防止短时间大量请求涌入，请谨慎开启和设置"
 		group.Code = "cc2"
+		group.IsTemplate = true
 
 		{
 			set := &HTTPFirewallRuleSet{}
@@ -479,7 +545,7 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 				{
 					Code: HTTPFirewallActionBlock,
 					Options: maps.Map{
-						"timeout": 600,
+						"timeout": 1800,
 					},
 				},
 			}
@@ -537,7 +603,7 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 				{
 					Code: HTTPFirewallActionBlock,
 					Options: maps.Map{
-						"timeout": 600,
+						"timeout": 1800,
 					},
 				},
 			}
@@ -596,7 +662,7 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 				{
 					Code: HTTPFirewallActionBlock,
 					Options: maps.Map{
-						"timeout": 600,
+						"timeout": 1800,
 					},
 				},
 			}
@@ -622,6 +688,7 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 		group.Name = "防盗链"
 		group.Description = "防止第三方网站引用本站资源。"
 		group.Code = "referer"
+		group.IsTemplate = true
 
 		{
 			set := &HTTPFirewallRuleSet{}
@@ -665,6 +732,7 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 		group.Name = "自定义规则分组"
 		group.Description = "我的自定义规则分组，可以将自定义的规则放在这个分组下"
 		group.Code = "custom"
+		group.IsTemplate = true
 		policy.Inbound.Groups = append(policy.Inbound.Groups, group)
 	}
 

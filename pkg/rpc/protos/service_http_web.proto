@@ -6,6 +6,7 @@ package pb;
 import "models/model_http_web.proto";
 import "models/rpc_messages.proto";
 
+// HTTP Web相关管理服务
 service HTTPWebService {
 	// 创建Web配置
 	rpc createHTTPWeb (CreateHTTPWebRequest) returns (CreateHTTPWebResponse);
@@ -81,6 +82,30 @@ service HTTPWebService {
 
 	// 更改通用设置
 	rpc updateHTTPWebCommon(UpdateHTTPWebCommonRequest) returns (RPCSuccess);
+
+	// 修改请求限制
+	rpc updateHTTPWebRequestLimit(UpdateHTTPWebRequestLimitRequest) returns (RPCSuccess);
+
+	// 查找请求限制
+	rpc findHTTPWebRequestLimit(FindHTTPWebRequestLimitRequest) returns (FindHTTPWebRequestLimitResponse);
+
+	// 修改请求脚本
+	rpc updateHTTPWebRequestScripts(UpdateHTTPWebRequestScriptsRequest) returns (RPCSuccess);
+
+	// 查找请求脚本
+	rpc findHTTPWebRequestScripts(FindHTTPWebRequestScriptsRequest) returns (FindHTTPWebRequestScriptsResponse);
+
+	// 修改UAM设置
+	rpc updateHTTPWebUAM(UpdateHTTPWebUAMRequest) returns (RPCSuccess);
+
+	// 查找UAM设置
+	rpc findHTTPWebUAM(FindHTTPWebUAMRequest) returns (FindHTTPWebUAMResponse);
+
+	// 修改防盗链设置
+	rpc updateHTTPWebReferers(UpdateHTTPWebReferersRequest) returns (RPCSuccess);
+
+	// 查找防盗链设置
+	rpc findHTTPWebReferers(FindHTTPWebReferersRequest) returns (FindHTTPWebReferersResponse);
 }
 
 // 创建Web配置
@@ -131,7 +156,7 @@ message UpdateHTTPWebWebPRequest {
 // 更改RemoteAddr配置
 message UpdateHTTPWebRemoteAddrRequest {
 	int64 httpWebId = 1;
-	bytes remoteAddrJSON = 2;
+	bytes remoteAddrJSON = 2; // @link json:http_remote_addr_config
 }
 
 // 更改字符集配置
@@ -167,25 +192,25 @@ message UpdateHTTPWebPagesRequest {
 // 更改访问日志配置
 message UpdateHTTPWebAccessLogRequest {
 	int64 httpWebId = 1;
-	bytes accessLogJSON = 2;
+	bytes accessLogJSON = 2; // @link json:http_access_log_ref
 }
 
 // 更改统计配置
 message UpdateHTTPWebStatRequest {
 	int64 httpWebId = 1;
-	bytes statJSON = 2;
+	bytes statJSON = 2; // @link json:http_stat_stat_ref
 }
 
 // 更改缓存配置
 message UpdateHTTPWebCacheRequest {
 	int64 httpWebId = 1;
-	bytes cacheJSON = 2;
+	bytes cacheJSON = 2; // @link json:http_cache_config
 }
 
 // 更改防火墙设置
 message UpdateHTTPWebFirewallRequest {
 	int64 httpWebId = 1;
-	bytes firewallJSON = 2;
+	bytes firewallJSON = 2; // @link json:http_firewall_ref
 }
 
 // 更改路径规则配置
@@ -203,7 +228,7 @@ message UpdateHTTPWebRedirectToHTTPSRequest {
 // 更改Websocket设置
 message UpdateHTTPWebWebsocketRequest {
 	int64 httpWebId = 1;
-	bytes websocketJSON = 2;
+	bytes websocketJSON = 2; // @link json:http_websocket_ref
 }
 
 // 更改Fastcgi设置
@@ -243,4 +268,64 @@ message UpdateHTTPWebAuthRequest {
 message UpdateHTTPWebCommonRequest {
 	int64 httpWebId = 1;
 	bool mergeSlashes = 2;
+}
+
+// 修改请求限制
+message UpdateHTTPWebRequestLimitRequest {
+	int64 httpWebId = 1;
+	bytes requestLimitJSON = 2;
+}
+
+// 查找请求限制
+message FindHTTPWebRequestLimitRequest {
+	int64 httpWebId = 1;
+}
+
+message FindHTTPWebRequestLimitResponse {
+	bytes requestLimitJSON = 1;
+}
+
+// 修改请求脚本
+message UpdateHTTPWebRequestScriptsRequest {
+	int64 httpWebId = 1;
+	bytes requestScriptsJSON = 2;
+}
+
+// 查找请求脚本
+message FindHTTPWebRequestScriptsRequest {
+	int64 httpWebId = 1;
+}
+
+message FindHTTPWebRequestScriptsResponse {
+	bytes requestScriptsJSON = 1;
+}
+
+// 修改服务UAM设置
+message UpdateHTTPWebUAMRequest {
+	int64 httpWebId = 1;
+	bytes uamJSON = 2;
+}
+
+// 查找服务UAM设置
+message FindHTTPWebUAMRequest {
+	int64 httpWebId = 1;
+}
+
+message FindHTTPWebUAMResponse {
+	bytes uamJSON = 1;
+}
+
+// 修改防盗链设置
+message UpdateHTTPWebReferersRequest {
+	int64 httpWebId = 1;
+	bytes referersJSON = 2;
+}
+
+// 查找防盗链设置
+message FindHTTPWebReferersRequest {
+	int64 httpWebId = 1;
+}
+
+message FindHTTPWebReferersResponse {
+	bytes referersJSON = 1;
 }

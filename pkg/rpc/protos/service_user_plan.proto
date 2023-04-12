@@ -6,7 +6,7 @@ package pb;
 import "models/rpc_messages.proto";
 import "models/model_user_plan.proto";
 
-// 用户购买的套餐
+// 用户购买的套餐管理服务
 service UserPlanService {
 	// 购买套餐
 	rpc buyUserPlan(BuyUserPlanRequest) returns (BuyUserPlanResponse);
@@ -40,6 +40,7 @@ message BuyUserPlanRequest{
 	string dayTo = 3;
 	string period = 4;
 	int32  countPeriod = 5;
+	string name = 6;
 }
 
 message BuyUserPlanResponse {
@@ -69,6 +70,7 @@ message UpdateUserPlanRequest {
 	int64 planId = 2;
 	string dayTo = 3;
 	bool isOn = 4;
+	string name = 5;
 }
 
 // 删除已购套餐

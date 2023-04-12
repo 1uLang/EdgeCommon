@@ -10,6 +10,7 @@ import "models/model_region_country.proto";
 import "models/model_region_province.proto";
 import "models/rpc_messages.proto";
 
+// HTTP防火墙（WAF）服务
 service HTTPFirewallPolicyService {
 	// 获取所有可用策略
 	rpc findAllEnabledHTTPFirewallPolicies (FindAllEnabledHTTPFirewallPoliciesRequest) returns (FindAllEnabledHTTPFirewallPoliciesResponse);
@@ -95,7 +96,11 @@ message UpdateHTTPFirewallPolicyRequest {
 	string description = 4;
 	repeated string firewallGroupCodes = 5;
 	bytes blockOptionsJSON = 6;
+	bytes captchaOptionsJSON = 11;
 	string mode = 7;
+	bool useLocalFirewall = 8;
+	bytes synFloodJSON = 9;
+	bytes LogJSON = 10;
 }
 
 // 修改分组信息
@@ -114,6 +119,7 @@ message UpdateHTTPFirewallInboundConfigRequest {
 // 计算可用的防火墙策略数量
 message CountAllEnabledHTTPFirewallPoliciesRequest {
 	string keyword = 1;
+	int64 nodeClusterId = 2;
 }
 
 // 列出单页的防火墙策略
@@ -121,6 +127,7 @@ message ListEnabledHTTPFirewallPoliciesRequest {
 	int64 offset = 1;
 	int64 size = 2;
 	string keyword = 3;
+	int64 nodeClusterId = 4;
 }
 
 message ListEnabledHTTPFirewallPoliciesResponse {

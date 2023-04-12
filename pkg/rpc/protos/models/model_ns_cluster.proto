@@ -9,4 +9,13 @@ message NSCluster {
 	bool isOn = 2;
 	string name = 3;
 	string installDir = 4;
+	bytes tcpJSON = 5;
+	bytes tlsJSON = 6;
+	bytes udpJSON = 7;
+	repeated string hosts = 8;
+	bytes soaJSON = 12;
+	string email = 13;
+	bool autoRemoteStart = 9;
+	string timeZone = 10;
+	bytes answerJSON = 11;
 }

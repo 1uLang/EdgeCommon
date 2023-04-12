@@ -32,16 +32,18 @@ type ReverseProxyConfig struct {
 	MaxConns     int                  `yaml:"maxConns" json:"maxConns"`         // 最大并发连接数 TODO
 	MaxIdleConns int                  `yaml:"maxIdleConns" json:"maxIdleConns"` // 最大空闲连接数 TODO
 
-	StripPrefix     string          `yaml:"stripPrefix" json:"stripPrefix"`         // 去除URL前缀
-	RequestHostType RequestHostType `yaml:"requestHostType" json:"requestHostType"` // 请求Host类型
-	RequestHost     string          `yaml:"requestHost" json:"requestHost"`         // 请求Host，支持变量
-	RequestURI      string          `yaml:"requestURI" json:"requestURI"`           // 请求URI，支持变量，如果同时定义了StripPrefix，则先执行StripPrefix
+	StripPrefix              string          `yaml:"stripPrefix" json:"stripPrefix"`                           // 去除URL前缀
+	RequestHostType          RequestHostType `yaml:"requestHostType" json:"requestHostType"`                   // 请求Host类型
+	RequestHost              string          `yaml:"requestHost" json:"requestHost"`                           // 请求Host，支持变量
+	RequestURI               string          `yaml:"requestURI" json:"requestURI"`                             // 请求URI，支持变量，如果同时定义了StripPrefix，则先执行StripPrefix
+	RequestHostExcludingPort bool            `yaml:"requestHostExcludingPort" json:"requestHostExcludingPort"` // 请求Host不包括端口
 
 	AddHeaders []string `yaml:"addHeaders" json:"addHeaders"` // 自动添加的Header
 
 	AutoFlush bool `yaml:"autoFlush" json:"autoFlush"` // 是否自动刷新缓冲区，在比如SSE（server-sent events）场景下很有用
 
-	ProxyProtocol *ProxyProtocolConfig `yaml:"proxyProtocol" json:"proxyProtocol"`
+	ProxyProtocol   *ProxyProtocolConfig `yaml:"proxyProtocol" json:"proxyProtocol"`     // PROXY Protocol
+	FollowRedirects bool                 `yaml:"followRedirects" json:"followRedirects"` // 回源跟随
 
 	requestHostHasVariables bool
 	requestURIHasVariables  bool
@@ -64,6 +66,7 @@ func (this *ReverseProxyConfig) Init() error {
 
 	// 将源站分组
 	this.schedulingGroupMap = map[string]*SchedulingGroup{}
+	var hasDomainGroups = false
 	for _, origin := range this.PrimaryOrigins {
 		if len(origin.Domains) == 0 {
 			group, ok := this.schedulingGroupMap[""]
@@ -76,6 +79,7 @@ func (this *ReverseProxyConfig) Init() error {
 			}
 			group.PrimaryOrigins = append(group.PrimaryOrigins, origin)
 		} else {
+			hasDomainGroups = true
 			for _, domain := range origin.Domains {
 				group, ok := this.schedulingGroupMap[domain]
 				if !ok {
@@ -89,6 +93,7 @@ func (this *ReverseProxyConfig) Init() error {
 			}
 		}
 	}
+
 	for _, origin := range this.BackupOrigins {
 		if len(origin.Domains) == 0 {
 			group, ok := this.schedulingGroupMap[""]
@@ -101,6 +106,7 @@ func (this *ReverseProxyConfig) Init() error {
 			}
 			group.BackupOrigins = append(group.BackupOrigins, origin)
 		} else {
+			hasDomainGroups = true
 			for _, domain := range origin.Domains {
 				group, ok := this.schedulingGroupMap[domain]
 				if !ok {
@@ -111,6 +117,24 @@ func (this *ReverseProxyConfig) Init() error {
 					this.schedulingGroupMap[domain] = group
 				}
 				group.BackupOrigins = append(group.BackupOrigins, origin)
+			}
+		}
+	}
+
+	// 再次分解
+	if hasDomainGroups {
+		defaultGroup, ok := this.schedulingGroupMap[""]
+		if ok {
+			for domain, group := range this.schedulingGroupMap {
+				if domain == "" {
+					continue
+				}
+				for _, origin := range defaultGroup.PrimaryOrigins {
+					group.PrimaryOrigins = append(group.PrimaryOrigins, origin)
+				}
+				for _, origin := range defaultGroup.BackupOrigins {
+					group.BackupOrigins = append(group.BackupOrigins, origin)
+				}
 			}
 		}
 	}
@@ -194,10 +218,11 @@ func (this *ReverseProxyConfig) AddBackupOrigin(origin *OriginConfig) {
 	this.BackupOrigins = append(this.BackupOrigins, origin)
 }
 
-// NextOrigin 取得下一个可用的后端服务
+// NextOrigin 取得下一个可用的源站
 func (this *ReverseProxyConfig) NextOrigin(call *shared.RequestCall) *OriginConfig {
-	this.schedulingLocker.RLock()
-	defer this.schedulingLocker.RUnlock()
+	// 这里不能使用RLock/RUnlock，因为在NextOrigin()方法中可能会对调度对象动态调整
+	this.schedulingLocker.Lock()
+	defer this.schedulingLocker.Unlock()
 
 	if len(this.schedulingGroupMap) == 0 {
 		return nil
@@ -226,6 +251,43 @@ func (this *ReverseProxyConfig) NextOrigin(call *shared.RequestCall) *OriginConf
 	group, ok := this.schedulingGroupMap[""]
 	if ok {
 		return group.NextOrigin(call)
+	}
+
+	return nil
+}
+
+// AnyOrigin 取下一个任意的源站
+func (this *ReverseProxyConfig) AnyOrigin(call *shared.RequestCall, excludingOriginIds []int64) *OriginConfig {
+	this.schedulingLocker.Lock()
+	defer this.schedulingLocker.Unlock()
+
+	if len(this.schedulingGroupMap) == 0 {
+		return nil
+	}
+
+	// 空域名
+	if call == nil || len(call.Domain) == 0 {
+		group, ok := this.schedulingGroupMap[""]
+		if ok {
+			return group.AnyOrigin(excludingOriginIds)
+		}
+		return nil
+	}
+
+	// 按域名匹配
+	for domainPattern, group := range this.schedulingGroupMap {
+		if len(domainPattern) > 0 && configutils.MatchDomain(domainPattern, call.Domain) {
+			origin := group.AnyOrigin(excludingOriginIds)
+			if origin != nil {
+				return origin
+			}
+		}
+	}
+
+	// 再次查找没有设置域名的分组
+	group, ok := this.schedulingGroupMap[""]
+	if ok {
+		return group.AnyOrigin(excludingOriginIds)
 	}
 
 	return nil

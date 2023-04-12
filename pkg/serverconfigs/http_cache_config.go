@@ -9,11 +9,17 @@ type HTTPCacheConfig struct {
 	IsPrior bool `yaml:"isPrior" json:"isPrior"`
 	IsOn    bool `yaml:"isOn" json:"isOn"`
 
-	AddStatusHeader bool   `yaml:"addStatusHeader" json:"addStatusHeader"` // 是否增加命中状态Header
-	PurgeIsOn       bool   `yaml:"purgeIsOn" json:"purgeIsOn"`             // 是否允许使用Purge方法清理
-	PurgeKey        string `yaml:"purgeKey" json:"purgeKey"`               // Purge时使用的Edge-Purge-Key
+	AddStatusHeader          bool `yaml:"addStatusHeader" json:"addStatusHeader"`                   // 是否增加命中状态Header（X-Cache）
+	AddAgeHeader             bool `yaml:"addAgeHeader" json:"addAgeHeader"`                         // 是否增加Age Header
+	EnableCacheControlMaxAge bool `yaml:"enableCacheControlMaxAge" json:"enableCacheControlMaxAge"` // 是否支持Cache-Control: max-age=...
+	DisablePolicyRefs        bool `yaml:"disablePolicyRefs" json:"disablePolicyRefs"`               // 是否停用策略中定义的条件
 
-	CacheRefs []*HTTPCacheRef `yaml:"cacheRefs" json:"cacheRefs"` // 缓存配置
+	PurgeIsOn bool   `yaml:"purgeIsOn" json:"purgeIsOn"` // 是否允许使用Purge方法清理
+	PurgeKey  string `yaml:"purgeKey" json:"purgeKey"`   // Purge时使用的X-Edge-Purge-Key
+
+	Stale *HTTPCacheStaleConfig `yaml:"stale" json:"stale"` // 陈旧缓存使用策略
+
+	CacheRefs []*HTTPCacheRef `yaml:"cacheRefs" json:"cacheRefs"` // 缓存条件配置
 }
 
 func (this *HTTPCacheConfig) Init() error {
