@@ -515,6 +515,7 @@ type CountAllEnabledUsersRequest struct {
 
 	Keyword     string `protobuf:"bytes,1,opt,name=keyword,proto3" json:"keyword,omitempty"`
 	IsVerifying bool   `protobuf:"varint,2,opt,name=isVerifying,proto3" json:"isVerifying,omitempty"`
+	ClusterId   int64  `protobuf:"varint,3,opt,name=clusterId,proto3" json:"clusterId,omitempty"`
 }
 
 func (x *CountAllEnabledUsersRequest) Reset() {
@@ -561,6 +562,13 @@ func (x *CountAllEnabledUsersRequest) GetIsVerifying() bool {
 		return x.IsVerifying
 	}
 	return false
+}
+
+func (x *CountAllEnabledUsersRequest) GetClusterId() int64 {
+	if x != nil {
+		return x.ClusterId
+	}
+	return 0
 }
 
 // 列出单页用户
